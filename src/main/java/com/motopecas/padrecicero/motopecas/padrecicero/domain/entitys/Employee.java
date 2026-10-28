@@ -54,7 +54,7 @@ public class Employee {
 
     private LocalDate creationDate;
 
-    @OneToMany(mappedBy = "emplyee")
+    @OneToMany(mappedBy = "employee")
     private List<Sale> sales = new ArrayList<>();
 
     @OneToMany(mappedBy = "creator")
@@ -77,12 +77,11 @@ public class Employee {
     public void addSale(Sale sale){
         if (sales.contains(sale)){
             throw new SaleAlreadyRegistredException(
-                    String.format("ERRO! Venda com código Nº %s, já está registrada", sale.getSalesCode())
+                    String.format("ERRO! Venda com código Nº %s, já está registrada", sale.getSaleCode())
             );
         }
 
         sales.add(sale);
-        sale.addEmplyee(this);
     }
 
     // ADICIONAR NOVA PEÇA REGISTRADA/CRIADA

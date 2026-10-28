@@ -36,10 +36,10 @@ public class Sale {
 
     private StatusSale statusSale;
 
-    @OneToMany(mappedBy = "sale")
+    @OneToMany(mappedBy = "sale", fetch = FetchType.EAGER)
     private List<ItemForSale> itemForSales = new ArrayList<>();
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "employee_id")
     private Employee employee;
 

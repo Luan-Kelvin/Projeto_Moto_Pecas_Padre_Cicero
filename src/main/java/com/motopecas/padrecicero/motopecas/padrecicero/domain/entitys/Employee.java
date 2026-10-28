@@ -54,10 +54,10 @@ public class Employee {
 
     private LocalDate creationDate;
 
-    @OneToMany(mappedBy = "employee")
+    @OneToMany(mappedBy = "employee", fetch = FetchType.LAZY)
     private List<Sale> sales = new ArrayList<>();
 
-    @OneToMany(mappedBy = "creator")
+    @OneToMany(mappedBy = "creator", fetch = FetchType.LAZY)
     private List<Part> registredItems = new ArrayList<>();
 
     public Employee(Long id, String name, String email, String password, JobType jobType) {

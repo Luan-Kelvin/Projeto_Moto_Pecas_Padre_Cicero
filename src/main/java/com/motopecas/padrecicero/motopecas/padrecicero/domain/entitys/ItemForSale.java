@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 import java.math.BigDecimal;
 
 @Entity
-@Table(name = "itemsForSales")
+@Table(name = "items_for_sales")
 @EqualsAndHashCode(of = "id")
 @Getter
 @NoArgsConstructor
@@ -24,11 +24,11 @@ public class ItemForSale {
 
     private BigDecimal subtotal;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "sale_id")
     private Sale sale;
 
-    @ManyToOne()
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "part_id")
     private Part part;
 

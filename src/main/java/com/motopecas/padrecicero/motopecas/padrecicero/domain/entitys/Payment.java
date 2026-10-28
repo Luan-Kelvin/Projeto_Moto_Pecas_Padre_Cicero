@@ -26,9 +26,11 @@ public class Payment {
     private BigDecimal value;
 
     @NotNull
+    @Enumerated(EnumType.STRING)
     private PaymentMethod paymentMethod;
 
     @NotNull
+    @Enumerated(EnumType.STRING)
     private PaymentStatus paymentStatus;
 
     @NotNull
@@ -36,7 +38,7 @@ public class Payment {
 
     private String externalReference;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "sale_id")
     private Sale sale;
 

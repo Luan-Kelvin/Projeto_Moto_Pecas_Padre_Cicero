@@ -1,5 +1,6 @@
 package com.motopecas.padrecicero.motopecas.padrecicero.domain.entitys;
 
+import com.motopecas.padrecicero.motopecas.padrecicero.exception.stockExceptions.TransactionAlreadyAddedException;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
@@ -8,6 +9,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "stocks")
@@ -26,13 +29,25 @@ public class Stock {
 
     private LocalDateTime lastUpdate;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "part_id")
     private Part part;
+
+    @OneToMany(mappedBy = "stock", fetch = FetchType.LAZY)
+    private List<InvetoryMovement> movements = new ArrayList<>();
 
     public Stock(Part part) {
         this.part = part;
         this.currentQuantity = 0;
         this.lastUpdate = LocalDateTime.now();
+    }
+
+    // ADICIONAR NOVA MOVMENTAÇÃO NO ESTOQUE
+    public void addMovement(InvetoryMovement movement){
+        if (movements.contains(movement)){
+            throw new TransactionAlreadyAddedException("ERRO! Movimentação ja adicionada");
+        }
+
+        movements.add(movement);
     }
 }

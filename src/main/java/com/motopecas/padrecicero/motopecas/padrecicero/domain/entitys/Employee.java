@@ -1,6 +1,7 @@
-package com.motopecas.padrecicero.motopecas.padrecicero.domain;
+package com.motopecas.padrecicero.motopecas.padrecicero.domain.entitys;
 
 import com.motopecas.padrecicero.motopecas.padrecicero.domain.enuns.JobType;
+import com.motopecas.padrecicero.motopecas.padrecicero.exception.emplyeeExceptions.ItemAlreadyRegistredException;
 import com.motopecas.padrecicero.motopecas.padrecicero.exception.emplyeeExceptions.SaleAlreadyRegistredException;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
@@ -12,7 +13,6 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -57,6 +57,9 @@ public class Employee {
     @OneToMany(mappedBy = "emplyee")
     private List<Sale> sales = new ArrayList<>();
 
+    @OneToMany(mappedBy = "creator")
+    private List<Part> registredItems = new ArrayList<>();
+
     public Employee(Long id, String name, String email, String password, JobType jobType) {
         this.id = id;
         this.name = name;
@@ -80,5 +83,14 @@ public class Employee {
 
         sales.add(sale);
         sale.addEmplyee(this);
+    }
+
+    // ADICIONAR NOVA PEÇA REGISTRADA/CRIADA
+    public void addPart(Part part){
+        if (registredItems.contains(part)){
+            throw new ItemAlreadyRegistredException("ERRO! Peça já foi adicionado na lista de criação d funcionário.");
+        }
+
+        registredItems.add(part);
     }
 }

@@ -43,12 +43,17 @@ public class Sale {
     @JoinColumn(name = "employee_id")
     private Employee employee;
 
+    @OneToOne
+    @JoinColumn(name = "payment_id")
+    private Payment paymentInfo;
+
     public Sale(
             String saleCode,
             LocalDate dateOfSale,
             BigDecimal totalValue,
             List<ItemForSale> itemForSales,
-            Employee employee
+            Employee employee,
+            Payment paymentInfo
     ) {
         this.saleCode = saleCode;
         this.dateOfSale = dateOfSale;
@@ -56,6 +61,7 @@ public class Sale {
         verifiyListItems(itemForSales);
         this.employee = employee;
         this.statusSale = StatusSale.ABERTA;
+        this.paymentInfo = paymentInfo;
     }
 
     // VERIFICAR SE LISTA DE ITENS ESTÁ VAZIA

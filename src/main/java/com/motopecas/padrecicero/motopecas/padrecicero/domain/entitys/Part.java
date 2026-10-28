@@ -45,7 +45,7 @@ public class Part {
     private BigDecimal sellingPrice;
 
     @NotNull
-    @Min(value = 0, message = "ERRO! valor minimo de estoque não pode ser menor que zero.")
+    @Min(0)
     private Integer minimumStock;
 
     private Boolean active;
@@ -55,6 +55,10 @@ public class Part {
     @ManyToOne
     @JoinColumn(name = "creator_id")
     private Employee creator;
+
+    @OneToOne
+    @JoinColumn(name = "stock_id")
+    private Stock stock;
 
     public Part(
             String name,

@@ -35,7 +35,7 @@ public class Part {
     @Enumerated(EnumType.STRING)
     private PartCategory category;
 
-    @NotNull
+    @NotBlank
     @Column(unique = true)
     private String partCode;
 
@@ -58,7 +58,6 @@ public class Part {
     private Employee creator;
 
     @OneToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "stock_id")
     private Stock stock;
 
     public Part(
@@ -88,7 +87,7 @@ public class Part {
 
     // VERIFICAR VALOR MÍNIMO DA PEÇA
     public void checkPartPrice(BigDecimal value){
-        if (value.compareTo(BigDecimal.valueOf(0.10)) < 0){
+        if (value == null || value.compareTo(BigDecimal.valueOf(0.10)) < 0){
             throw new InvalidPartPriceException("ERRO! Valor mínimo de preço de venda da peça é R$0,10.");
         }
 

@@ -67,7 +67,7 @@ public class Employee {
         this.password = password;
         this.jobType = jobType;
         this.active = true;
-        this.verified = null;
+        this.verified = false;
         this.verificationToken = null;
         this.verificationTokenExpiration = null;
         this.creationDate = LocalDate.now();
@@ -82,6 +82,10 @@ public class Employee {
         }
 
         sales.add(sale);
+
+        if (sale.getEmployee() != this){
+            sale.addEmployee(this);
+        }
     }
 
     // ADICIONAR NOVA PEÇA REGISTRADA/CRIADA

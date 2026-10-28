@@ -34,17 +34,17 @@ public class Sale {
     @NotNull
     private BigDecimal totalValue;
 
+    @Enumerated(EnumType.STRING)
     private StatusSale statusSale;
 
-    @OneToMany(mappedBy = "sale", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "sale", fetch = FetchType.LAZY)
     private List<ItemForSale> itemForSales = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "employee_id")
     private Employee employee;
 
-    @OneToOne
-    @JoinColumn(name = "payment_id")
+    @OneToOne(mappedBy = "sale", fetch = FetchType.LAZY)
     private Payment paymentInfo;
 
     public Sale(
@@ -66,10 +66,21 @@ public class Sale {
 
     // VERIFICAR SE LISTA DE ITENS ESTÁ VAZIA
     public void verifiyListItems(List<ItemForSale> items){
-        if (items.isEmpty()){
-            throw new ListOfSalesItemsIsEmptyException("ERRO! Lista com itens de compra está vazia.");
+        if (items == null || items.isEmpty()) {
+            throw new ListOfSalesItemsIsEmptyException(
+                    "ERRO! Lista com itens de compra está vazia."
+            );
         }
 
-        this.itemForSales = items;
+        this.itemForSales = new ArrayList<>(items);
+    }
+
+    // ADICIONAR FUNCIONARIO
+    public void addEmployee(Employee employee){
+        this.employee = employee;
+
+        if (!employee.getSales().contains(this)){
+            employee.addSale(this);
+        }
     }
 }

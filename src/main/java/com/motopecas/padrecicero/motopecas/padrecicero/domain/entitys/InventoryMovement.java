@@ -3,6 +3,7 @@ package com.motopecas.padrecicero.motopecas.padrecicero.domain.entitys;
 import com.motopecas.padrecicero.motopecas.padrecicero.domain.enuns.MovementType;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,7 +15,7 @@ import java.time.LocalDateTime;
 @EqualsAndHashCode(of = "id")
 @Getter
 @NoArgsConstructor
-public class InvetoryMovement {
+public class InventoryMovement {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,6 +30,7 @@ public class InvetoryMovement {
     private MovementType movementType;
 
     @NotNull
+    @Positive
     private Integer quantity;
 
     private String reason;
@@ -37,14 +39,14 @@ public class InvetoryMovement {
     @JoinColumn(name = "employee_id")
     private Employee employee;
 
-    @OneToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "sale_id")
     private Sale sale;
 
     @NotNull
     private LocalDateTime transactionDate;
 
-    public InvetoryMovement(
+    public InventoryMovement(
             Stock stock,
             MovementType movementType,
             Integer quantity,

@@ -29,12 +29,12 @@ public class Stock {
 
     private LocalDateTime lastUpdate;
 
-    @OneToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "part_id")
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "part_id", unique = true)
     private Part part;
 
     @OneToMany(mappedBy = "stock", fetch = FetchType.LAZY)
-    private List<InvetoryMovement> movements = new ArrayList<>();
+    private List<InventoryMovement> movements = new ArrayList<>();
 
     public Stock(Part part) {
         this.part = part;
@@ -43,7 +43,7 @@ public class Stock {
     }
 
     // ADICIONAR NOVA MOVMENTAÇÃO NO ESTOQUE
-    public void addMovement(InvetoryMovement movement){
+    public void addMovement(InventoryMovement movement){
         if (movements.contains(movement)){
             throw new TransactionAlreadyAddedException("ERRO! Movimentação ja adicionada");
         }

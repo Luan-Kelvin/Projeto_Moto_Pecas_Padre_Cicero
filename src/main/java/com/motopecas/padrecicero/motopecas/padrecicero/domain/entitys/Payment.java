@@ -4,6 +4,7 @@ import com.motopecas.padrecicero.motopecas.padrecicero.domain.enuns.PaymentMetho
 import com.motopecas.padrecicero.motopecas.padrecicero.domain.enuns.PaymentStatus;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -23,6 +24,7 @@ public class Payment {
     private Long id;
 
     @NotNull
+    @Positive
     private BigDecimal value;
 
     @NotNull
@@ -38,7 +40,7 @@ public class Payment {
 
     private String externalReference;
 
-    @OneToOne(fetch = FetchType.EAGER)
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "sale_id")
     private Sale sale;
 

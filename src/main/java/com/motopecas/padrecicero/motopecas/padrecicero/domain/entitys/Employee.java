@@ -36,16 +36,16 @@ public class Employee {
     private String email;
 
     @NotBlank
-    @Pattern(regexp = "^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d).{8,}$",
-            message = "A senha deve ter no mínimo 8 caracteres, uma letra maiúscula, uma minúscula e um número")
     private String password;
 
     @Enumerated(EnumType.STRING)
     @NotNull
     private JobType jobType;
 
+    @NotNull
     private Boolean active;
 
+    @NotNull
     private Boolean verified;
 
     private String verificationToken;

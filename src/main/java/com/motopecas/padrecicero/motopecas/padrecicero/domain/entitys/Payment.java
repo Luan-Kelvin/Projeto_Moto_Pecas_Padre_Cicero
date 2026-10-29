@@ -25,7 +25,7 @@ public class Payment {
 
     @NotNull
     @Positive
-    private BigDecimal value;
+    private BigDecimal valuePayment;
 
     @NotNull
     @Enumerated(EnumType.STRING)
@@ -45,7 +45,7 @@ public class Payment {
     private Sale sale;
 
     public Payment(BigDecimal value, PaymentMethod paymentMethod, String externalReference, Sale sale) {
-        this.value = value;
+        this.valuePayment = value;
         this.paymentMethod = paymentMethod;
         this.externalReference = externalReference;
         this.sale = sale;

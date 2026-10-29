@@ -55,9 +55,11 @@ public class Part {
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "creator_id")
+    @NotNull
     private Employee creator;
 
-    @OneToOne(fetch = FetchType.EAGER)
+    @OneToOne(mappedBy = "part", fetch = FetchType.EAGER)
+    @JoinColumn(name = "stock_id")
     private Stock stock;
 
     public Part(

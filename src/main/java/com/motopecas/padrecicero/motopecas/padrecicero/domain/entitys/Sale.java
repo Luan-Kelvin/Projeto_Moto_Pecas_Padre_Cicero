@@ -29,12 +29,14 @@ public class Sale {
     @Column(unique = true)
     private String saleCode;
 
+    @NotNull
     private LocalDate dateOfSale;
 
     @NotNull
     private BigDecimal totalValue;
 
     @Enumerated(EnumType.STRING)
+    @NotNull
     private StatusSale statusSale;
 
     @OneToMany(mappedBy = "sale", fetch = FetchType.LAZY)
@@ -42,6 +44,7 @@ public class Sale {
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "employee_id")
+    @NotNull
     private Employee employee;
 
     @OneToOne(mappedBy = "sale", fetch = FetchType.LAZY)

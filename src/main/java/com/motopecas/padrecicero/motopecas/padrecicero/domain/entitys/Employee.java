@@ -60,6 +60,9 @@ public class Employee {
     @OneToMany(mappedBy = "creator", fetch = FetchType.LAZY)
     private List<Part> registredItems = new ArrayList<>();
 
+    @OneToMany(mappedBy = "employee", fetch = FetchType.LAZY)
+    private List<InventoryMovement> movements = new ArrayList<>();
+
     public Employee(Long id, String name, String email, String password, JobType jobType) {
         this.id = id;
         this.name = name;

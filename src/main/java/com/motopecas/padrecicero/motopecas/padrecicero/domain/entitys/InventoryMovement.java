@@ -37,10 +37,12 @@ public class InventoryMovement {
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "employee_id")
+    @NotNull
     private Employee employee;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "sale_id")
+    @NotNull
     private Sale sale;
 
     @NotNull

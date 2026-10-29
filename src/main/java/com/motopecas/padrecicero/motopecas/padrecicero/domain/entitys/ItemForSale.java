@@ -32,10 +32,12 @@ public class ItemForSale {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "sale_id")
+    @NotNull
     private Sale sale;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "part_id")
+    @NotNull
     private Part part;
 
 

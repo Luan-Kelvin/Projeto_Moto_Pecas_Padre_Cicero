@@ -31,6 +31,7 @@ public class Stock {
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "part_id", unique = true)
+    @NotNull
     private Part part;
 
     @OneToMany(mappedBy = "stock", fetch = FetchType.LAZY)

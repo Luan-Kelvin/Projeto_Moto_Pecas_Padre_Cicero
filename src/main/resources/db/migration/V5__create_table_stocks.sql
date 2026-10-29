@@ -1,0 +1,9 @@
+CREATE TABLE stocks(
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    current_quantity INTEGER NOT NULL DEFAULT 0,
+    last_update TIMESTAMP DEFAULT (CURRENT_TIMESTAMP),
+    part_id BIGINT NOT NULL,
+
+    CONSTRAINT fk_part_id
+    FOREIGN KEY (part_id) REFERENCES parts (id)
+);

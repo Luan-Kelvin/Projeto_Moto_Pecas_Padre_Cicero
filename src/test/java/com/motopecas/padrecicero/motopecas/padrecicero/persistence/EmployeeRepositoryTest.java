@@ -26,7 +26,7 @@ public class EmployeeRepositoryTest {
 
     @Test
     @DisplayName("Testa se funcionário está sendo salvo no banco.")
-    void shouldSaveEmplyee(){
+    void shouldSaveEmpolyee(){
         Employee employee = new Employee(
                 "Joaquim Freitas", "jojo@gmail.com", "Joaquim12345", JobType.ADMIN
         );
@@ -76,11 +76,13 @@ public class EmployeeRepositoryTest {
         employeeRepository.save(employee);
         entityManager.flush();
 
+        Long id = employee.getId();
+
         employeeRepository.delete(employee);
         entityManager.flush();
 
-        Optional<Employee> employeeRep = employeeRepository.findById(employee.getId());
+        Optional<Employee> result = employeeRepository.findById(id);
 
-        assertThat(employeeRep).isNotPresent();
+        assertThat(result).isNotPresent();
     }
 }

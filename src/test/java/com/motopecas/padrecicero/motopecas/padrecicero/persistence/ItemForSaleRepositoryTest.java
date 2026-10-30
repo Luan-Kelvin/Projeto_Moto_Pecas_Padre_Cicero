@@ -3,6 +3,7 @@ package com.motopecas.padrecicero.motopecas.padrecicero.persistence;
 import com.motopecas.padrecicero.motopecas.padrecicero.domain.entitys.Employee;
 import com.motopecas.padrecicero.motopecas.padrecicero.domain.entitys.ItemForSale;
 import com.motopecas.padrecicero.motopecas.padrecicero.domain.entitys.Part;
+import com.motopecas.padrecicero.motopecas.padrecicero.domain.entitys.Sale;
 import com.motopecas.padrecicero.motopecas.padrecicero.domain.enuns.JobType;
 import com.motopecas.padrecicero.motopecas.padrecicero.domain.enuns.PartCategory;
 import com.motopecas.padrecicero.motopecas.padrecicero.repository.ItemForSaleRepository;
@@ -14,6 +15,7 @@ import org.springframework.boot.jpa.test.autoconfigure.TestEntityManager;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
@@ -48,16 +50,21 @@ public class ItemForSaleRepositoryTest {
         );
         entityManager.persistAndFlush(part);
 
+        Sale sale = new Sale("123456", LocalDate.now(), BigDecimal.valueOf(200) ,employee);
+        entityManager.persistAndFlush(sale);
+
         ItemForSale item = new ItemForSale(5, BigDecimal.valueOf(22.0) ,part);
+        item.addSale(sale);
 
         ItemForSale itemSaved = itemForSaleRepository.save(item);
+        entityManager.flush();
 
         assertThat(itemSaved.getId()).isNotNull();
     }
 
     @Test
-    @DisplayName("Testa se Funcionário é retornado quando é solicitado pelo ID.")
-    void shouldReturnEmployeeById(){
+    @DisplayName("Testa se Item de venda é retornado quando é solicitado pelo ID.")
+    void shouldReturnItemForSaleById(){
         Employee employee = new Employee(
                 "Joaquim Freitas", "jojo@gmail.com", "Joaquim12345", JobType.ADMIN
         );
@@ -75,7 +82,14 @@ public class ItemForSaleRepositoryTest {
         );
         entityManager.persistAndFlush(part);
 
+        Sale sale = new Sale("123456", LocalDate.now(), BigDecimal.valueOf(200) ,employee);
+        entityManager.persistAndFlush(sale);
+
         ItemForSale item = new ItemForSale(5, BigDecimal.valueOf(22.0) ,part);
+        item.addSale(sale);
+
+        itemForSaleRepository.save(item);
+        entityManager.flush();
 
         Long id = item.getId();
 
@@ -85,8 +99,8 @@ public class ItemForSaleRepositoryTest {
     }
 
     @Test
-    @DisplayName("Testa se Funcionário está sendo deletado do banco.")
-    void shouldDeleteEmployee(){
+    @DisplayName("Testa se Item de venda está sendo deletado do banco.")
+    void shouldDeleteItemForSale(){
         Employee employee = new Employee(
                 "Joaquim Freitas", "jojo@gmail.com", "Joaquim12345", JobType.ADMIN
         );
@@ -104,7 +118,11 @@ public class ItemForSaleRepositoryTest {
         );
         entityManager.persistAndFlush(part);
 
+        Sale sale = new Sale("123456", LocalDate.now(), BigDecimal.valueOf(200) ,employee);
+        entityManager.persistAndFlush(sale);
+
         ItemForSale item = new ItemForSale(5, BigDecimal.valueOf(22.0) ,part);
+        item.addSale(sale);
 
         itemForSaleRepository.save(item);
         entityManager.flush();

@@ -43,6 +43,7 @@ public class PaymentRepositoryTest {
         Payment payment = new Payment(BigDecimal.valueOf(300), PaymentMethod.PIX, null, sale);
 
         Payment paymentSaved = paymentRepository.save(payment);
+        entityManager.flush();
 
         assertThat(paymentSaved.getSale()).isNotNull();
         assertThat(paymentSaved.getPaymentMethod()).isEqualTo(PaymentMethod.PIX);
@@ -61,6 +62,7 @@ public class PaymentRepositoryTest {
 
         Payment payment = new Payment(BigDecimal.valueOf(300), PaymentMethod.PIX, null, sale);
         paymentRepository.save(payment);
+        entityManager.flush();
 
         Long id = payment.getId();
 
@@ -88,6 +90,7 @@ public class PaymentRepositoryTest {
 
         Payment payment = new Payment(BigDecimal.valueOf(300), PaymentMethod.PIX, null, sale);
         paymentRepository.save(payment);
+        entityManager.flush();
 
         Long id = payment.getId();
 

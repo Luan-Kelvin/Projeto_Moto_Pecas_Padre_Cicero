@@ -41,7 +41,7 @@ public class ItemForSale {
     private Part part;
 
 
-    public ItemForSale(Integer quantity, BigDecimal unitPrice, Sale sale, Part part) {
+    public ItemForSale(Integer quantity, BigDecimal unitPrice, Part part) {
         this.quantity = quantity;
         this.unitPrice = unitPrice;
         this.sale = sale;
@@ -54,6 +54,10 @@ public class ItemForSale {
         BigDecimal total = valueUnitPrice.multiply(BigDecimal.valueOf(quanttity));
 
         return total;
+    }
 
+    // ADICIONAR VENDA
+    public void addSale(Sale sale){
+        this.sale = sale;
     }
 }

@@ -78,6 +78,13 @@ public class Sale {
         this.itemForSales = new ArrayList<>(items);
     }
 
+    // ADICIONAR ITEM A LISTA DE ITENS DE VENDAS
+    public void addItemSale(ItemForSale item){
+        itemForSales.add(item);
+
+        item.addSale(this);
+    }
+
     // ADICIONAR FUNCIONARIO
     public void addEmployee(Employee employee){
         this.employee = employee;

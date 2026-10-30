@@ -54,28 +54,13 @@ public class Sale {
             String saleCode,
             LocalDate dateOfSale,
             BigDecimal totalValue,
-            List<ItemForSale> itemForSales,
-            Employee employee,
-            Payment paymentInfo
+            Employee employee
     ) {
         this.saleCode = saleCode;
         this.dateOfSale = dateOfSale;
         this.totalValue = totalValue;
-        verifiyListItems(itemForSales);
         this.employee = employee;
         this.statusSale = StatusSale.ABERTA;
-        this.paymentInfo = paymentInfo;
-    }
-
-    // VERIFICAR SE LISTA DE ITENS ESTÁ VAZIA
-    public void verifiyListItems(List<ItemForSale> items){
-        if (items == null || items.isEmpty()) {
-            throw new ListOfSalesItemsIsEmptyException(
-                    "ERRO! Lista com itens de compra está vazia."
-            );
-        }
-
-        this.itemForSales = new ArrayList<>(items);
     }
 
     // ADICIONAR ITEM A LISTA DE ITENS DE VENDAS
@@ -92,5 +77,10 @@ public class Sale {
         if (!employee.getSales().contains(this)){
             employee.addSale(this);
         }
+    }
+
+    // ADICIONAR FORMA DE PAGAMENTO
+    public void addPayment(Payment payment){
+        this.paymentInfo = payment;
     }
 }

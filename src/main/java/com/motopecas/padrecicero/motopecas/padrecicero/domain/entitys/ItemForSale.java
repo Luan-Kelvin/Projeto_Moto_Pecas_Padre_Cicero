@@ -44,7 +44,6 @@ public class ItemForSale {
     public ItemForSale(Integer quantity, BigDecimal unitPrice, Part part) {
         this.quantity = quantity;
         this.unitPrice = unitPrice;
-        this.sale = sale;
         this.part = part;
         this.subtotal = calculateSubtotal(quantity, unitPrice);
     }

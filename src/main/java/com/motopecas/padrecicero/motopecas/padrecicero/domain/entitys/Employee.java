@@ -63,8 +63,7 @@ public class Employee {
     @OneToMany(mappedBy = "employee", fetch = FetchType.LAZY)
     private List<InventoryMovement> movements = new ArrayList<>();
 
-    public Employee(Long id, String name, String email, String password, JobType jobType) {
-        this.id = id;
+    public Employee(String name, String email, String password, JobType jobType) {
         this.name = name;
         this.email = email;
         this.password = password;

@@ -1,4 +1,4 @@
-package com.motopecas.padrecicero.motopecas.padrecicero.service;
+package com.motopecas.padrecicero.motopecas.padrecicero.security;
 
 import com.motopecas.padrecicero.motopecas.padrecicero.exception.emplyeeExceptions.EmployeeNoFoundException;
 import com.motopecas.padrecicero.motopecas.padrecicero.repository.EmployeeRepository;
@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class EmployeeDetaislService implements UserDetailsService {
+public class CustomUserDetailsService implements UserDetailsService {
 
     private final EmployeeRepository employeeRepository;
 

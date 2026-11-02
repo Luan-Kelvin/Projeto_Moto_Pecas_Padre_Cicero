@@ -70,6 +70,13 @@ public class PartService {
         return conversor.converterPart(part);
     }
 
+    // EXIBIR TODAS AS PEÇAS QUE CONTENHA O NOME DIGITADO
+    public Page<PartGetDTO> searchPartByName(String name) {
+        Page<Part> parts = partRepository.findByNameContaining(name);
+
+        return parts.map(conversor::converterPart);
+    }
+
 
     @Transactional
     private String generatePartCode() {

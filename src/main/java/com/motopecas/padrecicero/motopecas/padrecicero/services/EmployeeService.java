@@ -52,10 +52,22 @@ public class EmployeeService {
     }
 
     // LISTAR FUNCIONÁRIOS
+    @Transactional
     public Page<EmployeeGetDTO> listEmployee(Pageable pageable){
         Page<Employee> list = employeeRepository.findAll(pageable);
 
         return list.map(conversor::converterEmployee);
+    }
+
+    // BUSCAR FUNCIONÁRIO ATRAVÉS DO ID
+    @Transactional
+    public EmployeeGetDTO findById(Long id){
+        Employee employee = employeeRepository.findById(id)
+                .orElseThrow(
+                        () -> new EmployeeNoFoundException(String.format("ERRO! Funcionário com ID = %s, não foi encontrado.", id))
+                );
+
+        return conversor.converterEmployee(employee);
     }
 
     // MARCAR FUNCIONÁRIO COMO VERIFICADO

@@ -10,4 +10,6 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long> {
     Optional<Employee> findByEmailAddVerificadTrue(String email);
 
     Optional<Employee> findByVerificationToken(String token);
+
+    Optional<Employee> findByEmail(String email);
 }

@@ -1,5 +1,6 @@
 package com.motopecas.padrecicero.motopecas.padrecicero.domain.entitys;
 
+import com.motopecas.padrecicero.motopecas.padrecicero.domain.dto.employee.EmployeePostDTO;
 import com.motopecas.padrecicero.motopecas.padrecicero.domain.enuns.JobType;
 import com.motopecas.padrecicero.motopecas.padrecicero.exception.emplyeeExceptions.ItemAlreadyRegistredException;
 import com.motopecas.padrecicero.motopecas.padrecicero.exception.emplyeeExceptions.SaleAlreadyRegistredException;

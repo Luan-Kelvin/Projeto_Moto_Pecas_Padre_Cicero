@@ -7,10 +7,10 @@ import com.motopecas.padrecicero.motopecas.padrecicero.domain.entitys.Part;
 import com.motopecas.padrecicero.motopecas.padrecicero.exception.partExceptions.PartAlreadyExistsException;
 import com.motopecas.padrecicero.motopecas.padrecicero.repository.PartRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Optional;
 
 @Service
 public class PartService {
@@ -49,6 +49,13 @@ public class PartService {
         partRepository.save(part);
 
         return conversor.converterPart(part);
+    }
+
+    @Transactional
+    public Page<PartGetDTO> listParts(Pageable pageable){
+        Page<Part> parts = partRepository.findAll(pageable);
+
+        return parts.map(conversor::converterPart);
     }
 
     @Transactional

@@ -5,6 +5,7 @@ import com.motopecas.padrecicero.motopecas.padrecicero.domain.dto.part.PartPostD
 import com.motopecas.padrecicero.motopecas.padrecicero.domain.entitys.Employee;
 import com.motopecas.padrecicero.motopecas.padrecicero.domain.entitys.Part;
 import com.motopecas.padrecicero.motopecas.padrecicero.exception.partExceptions.PartAlreadyExistsException;
+import com.motopecas.padrecicero.motopecas.padrecicero.exception.partExceptions.PartNotFoundException;
 import com.motopecas.padrecicero.motopecas.padrecicero.repository.PartRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -24,6 +25,7 @@ public class PartService {
     @Autowired
     private Conversor conversor;
 
+    // CADASTRAR NOVA PEÇA
     @Transactional
     public PartGetDTO registerPart(PartPostDTO dto){
         if(partRepository.existsByNameAndMark(dto.name(), dto.mark())){
@@ -51,12 +53,23 @@ public class PartService {
         return conversor.converterPart(part);
     }
 
+    // LISTAR PEÇAS CADASTRADAS COM PAGINAÇÃO
     @Transactional
     public Page<PartGetDTO> listParts(Pageable pageable){
         Page<Part> parts = partRepository.findAll(pageable);
 
         return parts.map(conversor::converterPart);
     }
+
+    // BUSCAR PEÇA PELO ID
+    @Transactional
+    public PartGetDTO findById(Long id){
+        Part part = partRepository.findById(id)
+                .orElseThrow(() -> new PartNotFoundException(String.format("ERRO! Peça com ID = %s, não foi enontrda.", id)));
+
+        return conversor.converterPart(part);
+    }
+
 
     @Transactional
     private String generatePartCode() {

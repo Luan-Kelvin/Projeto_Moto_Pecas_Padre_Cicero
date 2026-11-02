@@ -1,6 +1,7 @@
 package com.motopecas.padrecicero.motopecas.padrecicero.repository;
 
 import com.motopecas.padrecicero.motopecas.padrecicero.domain.entitys.Part;
+import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -23,4 +24,6 @@ public interface PartRepository extends JpaRepository<Part, Long> {
 
     @Query(value = "SELECT LAST_INSERT_ID()", nativeQuery = true)
     Long generatePartCode();
+
+    Page<Part> findByNameContaining(String name);
 }

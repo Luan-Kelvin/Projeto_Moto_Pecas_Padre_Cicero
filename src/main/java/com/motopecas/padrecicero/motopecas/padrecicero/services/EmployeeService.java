@@ -1,10 +1,13 @@
 package com.motopecas.padrecicero.motopecas.padrecicero.services;
 
+import com.motopecas.padrecicero.motopecas.padrecicero.domain.dto.employee.ChangeEmployeeJobDTO;
 import com.motopecas.padrecicero.motopecas.padrecicero.domain.dto.employee.EmployeeGetDTO;
 import com.motopecas.padrecicero.motopecas.padrecicero.domain.dto.employee.EmployeePostDTO;
 import com.motopecas.padrecicero.motopecas.padrecicero.domain.dto.employee.EmployeePutDTO;
 import com.motopecas.padrecicero.motopecas.padrecicero.domain.entitys.Employee;
+import com.motopecas.padrecicero.motopecas.padrecicero.domain.enuns.JobType;
 import com.motopecas.padrecicero.motopecas.padrecicero.exception.emplyeeExceptions.EmployeeAlreadyExistsException;
+import com.motopecas.padrecicero.motopecas.padrecicero.exception.emplyeeExceptions.EmployeeInactiveException;
 import com.motopecas.padrecicero.motopecas.padrecicero.exception.emplyeeExceptions.EmployeeNoFoundException;
 import com.motopecas.padrecicero.motopecas.padrecicero.repository.EmployeeRepository;
 import com.motopecas.padrecicero.motopecas.padrecicero.security.EmailVerificationService;
@@ -107,6 +110,26 @@ public class EmployeeService {
 
         return conversor.converterEmployee(employee);
 
+    }
+
+    // ALTERAR CARGO
+    @Transactional
+    public EmployeeGetDTO changeJobTitle(ChangeEmployeeJobDTO dto){
+        Employee employee = employeeRepository.findById(dto.id())
+                .orElseThrow(() -> new EmployeeNoFoundException(String.format("ERRO! Funcionário com ID = %s, não foi encontrado.", dto.id())
+                ));
+
+        if (!Boolean.TRUE.equals(employee.getActive()) || !Boolean.TRUE.equals(employee.getVerified())){
+            throw new EmployeeInactiveException("ERRO! Funcionário inátivo ou não verificado.");
+        }
+
+        boolean changedJob = !dto.newJob().equals(employee.getJobType());
+
+        if (changedJob){
+            employee.setJobType(dto.newJob());
+        }
+
+        return conversor.converterEmployee(employee);
     }
 
     // MARCAR FUNCIONÁRIO COMO VERIFICADO

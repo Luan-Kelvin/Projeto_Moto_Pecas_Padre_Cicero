@@ -3,6 +3,7 @@ package com.motopecas.padrecicero.motopecas.padrecicero.domain.entitys;
 import com.motopecas.padrecicero.motopecas.padrecicero.domain.enuns.JobType;
 import com.motopecas.padrecicero.motopecas.padrecicero.exception.emplyeeExceptions.ItemAlreadyRegistredException;
 import com.motopecas.padrecicero.motopecas.padrecicero.exception.emplyeeExceptions.SaleAlreadyRegistredException;
+import com.motopecas.padrecicero.motopecas.padrecicero.exception.emplyeeExceptions.VerificationTokenExpiredException;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -19,6 +20,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.UUID;
 
 @Entity
 @Table(name = "employees")
@@ -74,8 +76,8 @@ public class Employee implements UserDetails {
         this.jobType = jobType;
         this.active = true;
         this.verified = false;
-        this.verificationToken = null;
-        this.verificationTokenExpiration = null;
+        this.verificationToken = UUID.randomUUID().toString();
+        this.verificationTokenExpiration = LocalDateTime.now().plusMinutes(30);
         this.creationDate = LocalDate.now();
     }
 
@@ -130,6 +132,24 @@ public class Employee implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return true;
+        return true ;
+    }
+
+    public void toCheck(){
+        if (Boolean.TRUE.equals(this.verified)) {
+            return;
+        }
+
+        if (this.verificationTokenExpiration == null ||
+                this.verificationTokenExpiration.isBefore(LocalDateTime.now())) {
+
+            throw new VerificationTokenExpiredException(
+                    "ERRO! Token de verificação expirou."
+            );
+        }
+
+        this.verified = true;
+        this.verificationToken = null;
+        this.verificationTokenExpiration = null;
     }
 }

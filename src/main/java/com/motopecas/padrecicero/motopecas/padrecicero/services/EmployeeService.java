@@ -65,15 +65,24 @@ public class EmployeeService {
         return list.map(conversor::converterEmployee);
     }
 
-    // BUSCAR FUNCIONÁRIO ATRAVÉS DO ID
+    // BUSCAR FUNCIONÁRIO ATRAVÉS DO ID (CONTROLLER)
     @Transactional
-    public EmployeeGetDTO findById(Long id){
+    public EmployeeGetDTO findByIdController(Long id){
         Employee employee = employeeRepository.findById(id)
                 .orElseThrow(
                         () -> new EmployeeNoFoundException(String.format("ERRO! Funcionário com ID = %s, não foi encontrado.", id))
                 );
 
         return conversor.converterEmployee(employee);
+    }
+
+    // BUSCAR FUNCIONÁRIO ATRAVÉS DO ID (DEMAIS CLASSES DE SERVIÇO)
+    @Transactional
+    public Employee findById(Long id){
+        return employeeRepository.findById(id)
+                .orElseThrow(
+                        () -> new EmployeeNoFoundException(String.format("ERRO! Funcionário com ID = %s, não foi encontrado.", id))
+                );
     }
 
     // ATUALIZAR PERFIL DO FUNCIONÁRIO

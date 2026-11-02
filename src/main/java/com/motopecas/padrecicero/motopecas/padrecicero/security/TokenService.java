@@ -16,7 +16,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
-import java.net.Authenticator;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 
@@ -76,7 +75,7 @@ public class TokenService {
 
 
     // GERAR REFRESH TOKEN
-    private  String generateRefreshToken(Employee employee){
+    public String generateRefreshToken(Employee employee){
         try {
             Algorithm algorithm = Algorithm.HMAC256(secret);
             return JWT.create()

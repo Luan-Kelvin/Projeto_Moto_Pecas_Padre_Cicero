@@ -12,6 +12,7 @@ import jakarta.validation.constraints.Pattern;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -35,6 +36,7 @@ public class Employee implements UserDetails {
     private Long id;
 
     @NotBlank
+    @Setter
     private String name;
 
     @NotBlank
@@ -47,6 +49,7 @@ public class Employee implements UserDetails {
 
     @Enumerated(EnumType.STRING)
     @NotNull
+    @Setter
     private JobType jobType;
 
     @NotNull
@@ -133,7 +136,7 @@ public class Employee implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return true ;
+        return Boolean.TRUE.equals(this.active) && Boolean.TRUE.equals(this.verified) ;
     }
 
     public void toCheck(){
@@ -153,4 +156,12 @@ public class Employee implements UserDetails {
         this.verificationToken = null;
         this.verificationTokenExpiration = null;
     }
+
+  public void changeEmail(String newEmail){
+        this.email = newEmail;
+
+      this.verified = false;
+      this.verificationToken = UUID.randomUUID().toString();
+      this.verificationTokenExpiration =LocalDateTime.now().plusMinutes(30);
+  }
 }

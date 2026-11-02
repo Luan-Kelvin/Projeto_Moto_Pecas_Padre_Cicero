@@ -2,6 +2,7 @@ package com.motopecas.padrecicero.motopecas.padrecicero.services;
 
 import com.motopecas.padrecicero.motopecas.padrecicero.domain.dto.employee.EmployeeGetDTO;
 import com.motopecas.padrecicero.motopecas.padrecicero.domain.dto.employee.EmployeePostDTO;
+import com.motopecas.padrecicero.motopecas.padrecicero.domain.dto.employee.EmployeePutDTO;
 import com.motopecas.padrecicero.motopecas.padrecicero.domain.entitys.Employee;
 import com.motopecas.padrecicero.motopecas.padrecicero.exception.emplyeeExceptions.EmployeeAlreadyExistsException;
 import com.motopecas.padrecicero.motopecas.padrecicero.exception.emplyeeExceptions.EmployeeNoFoundException;
@@ -15,8 +16,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -68,6 +71,42 @@ public class EmployeeService {
                 );
 
         return conversor.converterEmployee(employee);
+    }
+
+    // ATUALIZAR PERFIL DO FUNCIONÁRIO
+    @Transactional
+    public EmployeeGetDTO updateEmployee(EmployeePutDTO dto) throws MessagingException {
+        Employee employee = employeeRepository.findById(dto.id())
+                .orElseThrow(() -> new EmployeeNoFoundException(String.format("ERRO! Funcionário com ID = %s, não foi encontrado.", dto.id())
+                ));
+
+        if (dto.name() != null){
+            employee.setName(dto.name());
+        }
+
+        boolean emailChanged = dto.email() != null && !dto.email().equalsIgnoreCase(employee.getEmail());
+
+        if (emailChanged){
+
+            if (employeeRepository.existsByEmailAndIdNot(dto.email(), dto.id())){
+                throw new EmployeeAlreadyExistsException(
+                        String.format("ERRO! Email = %s, já esta cadastrado.", dto.email()
+                        ));
+            }
+
+            employee.changeEmail(dto.email());
+        }
+
+        if (dto.jobType() != null){
+            employee.setJobType(dto.jobType());
+        }
+
+        if (emailChanged){
+            emailService.sendVerificationEmail(employee);
+        }
+
+        return conversor.converterEmployee(employee);
+
     }
 
     // MARCAR FUNCIONÁRIO COMO VERIFICADO

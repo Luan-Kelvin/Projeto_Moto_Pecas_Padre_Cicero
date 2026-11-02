@@ -9,10 +9,13 @@ import com.motopecas.padrecicero.motopecas.padrecicero.repository.EmployeeReposi
 import com.motopecas.padrecicero.motopecas.padrecicero.security.EmailVerificationService;
 import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -46,6 +49,13 @@ public class EmployeeService {
         emailService.sendVerificationEmail(employee);
 
         return conversor.converterEmployee(employee);
+    }
+
+    // LISTAR FUNCIONÁRIOS
+    public Page<EmployeeGetDTO> listEmployee(Pageable pageable){
+        Page<Employee> list = employeeRepository.findAll(pageable);
+
+        return list.map(conversor::converterEmployee);
     }
 
     // MARCAR FUNCIONÁRIO COMO VERIFICADO

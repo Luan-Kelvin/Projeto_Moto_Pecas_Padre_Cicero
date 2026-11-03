@@ -9,6 +9,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -26,13 +27,17 @@ public class Part {
     private Long id;
 
     @NotBlank
+    @Setter
     private String name;
 
+    @Setter
     private String description;
 
+    @Setter
     private String mark;
 
     @Enumerated(EnumType.STRING)
+    @Setter
     private PartCategory category;
 
     @NotBlank
@@ -40,13 +45,16 @@ public class Part {
     private String partCode;
 
     @NotNull
+    @Setter
     private BigDecimal costPrice;
 
     @NotNull
+    @Setter
     private BigDecimal sellingPrice;
 
     @NotNull
     @Min(0)
+    @Setter
     private Integer minimumStock;
 
     private Boolean active;

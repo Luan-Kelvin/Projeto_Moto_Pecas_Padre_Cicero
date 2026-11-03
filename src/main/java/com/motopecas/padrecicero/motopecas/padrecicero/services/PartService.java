@@ -154,6 +154,13 @@ public class PartService {
         return conversor.converterPart(part);
     }
 
+    // BUSCAR PEÇAS COM ESTOQUE BAIXO
+    public Page<PartGetDTO> searchForItemsWithLowStock(Pageable pageable){
+        Page<Part> parts = partRepository.searchForItemsWithLowStock(pageable);
+
+        return parts.map(conversor::converterPart);
+    }
+
     @Transactional
     private String generatePartCode() {
         partRepository.incrementPartCode();

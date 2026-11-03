@@ -2,6 +2,7 @@ package com.motopecas.padrecicero.motopecas.padrecicero.repository;
 
 import com.motopecas.padrecicero.motopecas.padrecicero.domain.entitys.Part;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -26,4 +27,12 @@ public interface PartRepository extends JpaRepository<Part, Long> {
     Long generatePartCode();
 
     Page<Part> findByNameContaining(String name);
+
+    @Query("""
+            SELECT p 
+            FROM Part p
+            JOIN p.stock s
+            WHERE s.currentQuantity < p.minimumStock 
+            """)
+    Page<Part> searchForItemsWithLowStock(Pageable pageable);
 }

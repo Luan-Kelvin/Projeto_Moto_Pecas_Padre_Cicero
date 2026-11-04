@@ -4,4 +4,6 @@ import com.motopecas.padrecicero.motopecas.padrecicero.domain.entitys.Stock;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface StockRepository extends JpaRepository<Stock, Long> {
+
+    Integer findByCurrentQuantity(Long id);
 }

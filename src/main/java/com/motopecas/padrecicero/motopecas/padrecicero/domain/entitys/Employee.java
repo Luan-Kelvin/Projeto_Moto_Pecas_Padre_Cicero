@@ -109,6 +109,15 @@ public class Employee implements UserDetails {
         registredItems.add(part);
     }
 
+    // ADICIONAR NOVA MOVIMENTAÇÃO
+    public void addMovement(InventoryMovement movement){
+        if (movement == null){
+            throw new NullPointerException();
+        }
+
+        this.movements.add(movement);
+    }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority("ROLE_USER"));

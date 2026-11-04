@@ -67,7 +67,6 @@ public class Part {
     private Employee creator;
 
     @OneToOne(mappedBy = "part", fetch = FetchType.EAGER)
-    @JoinColumn(name = "stock_id")
     private Stock stock;
 
     public Part(

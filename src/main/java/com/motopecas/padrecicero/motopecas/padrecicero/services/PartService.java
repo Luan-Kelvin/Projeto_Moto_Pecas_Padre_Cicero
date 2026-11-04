@@ -28,14 +28,14 @@ public class PartService {
     @Autowired
     private Conversor conversor;
 
-    // CADASTRAR NOVA PEÇA
+    // CADASTRAR NOVA PEÇA OBS: USE @AUTHENTICATIONPRINCIPAL PARA PEGAR O FUNCIONARIO QUE FAZ A OPERAÇÃO, ADD NO CONTROLLER)
     @Transactional
-    public PartGetDTO registerPart(PartPostDTO dto){
+    public PartGetDTO registerPart(PartPostDTO dto, Long idEmployee){
         if(partRepository.existsByNameAndMark(dto.name(), dto.mark())){
             throw new PartAlreadyExistsException("ERRO! Peça ja está cadastrada.");
         }
 
-        Employee creator = employeeService.findById(dto.creatorId());
+        Employee employee = employeeService.findById(idEmployee);
 
         String code = generatePartCode();
 
@@ -48,10 +48,11 @@ public class PartService {
                 dto.costPrice(),
                 dto.sellingPrice(),
                 dto.minimumStock(),
-                creator
+                employee
         );
 
         partRepository.save(part);
+        employee.addPart(part);
 
         return conversor.converterPart(part);
     }
@@ -64,13 +65,21 @@ public class PartService {
         return parts.map(conversor::converterPart);
     }
 
-    // BUSCAR PEÇA PELO ID
+    // BUSCAR PEÇA PELO ID (CONTROLLER)
     @Transactional
-    public PartGetDTO findById(Long id){
+    public PartGetDTO findByIdController(Long id){
         Part part = partRepository.findById(id)
                 .orElseThrow(() -> new PartNotFoundException(String.format("ERRO! Peça com ID = %s, não foi enontrda.", id)));
 
         return conversor.converterPart(part);
+    }
+
+    // BUSCAR PEÇA PELO ID (CLASSES)
+    @Transactional
+    public Part findById(Long id){
+        return partRepository.findById(id)
+                .orElseThrow(() -> new PartNotFoundException(String.format("ERRO! Peça com ID = %s, não foi enontrda.", id)));
+
     }
 
     // EXIBIR TODAS AS PEÇAS QUE CONTENHA O NOME DIGITADO

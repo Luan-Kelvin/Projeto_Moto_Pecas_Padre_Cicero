@@ -42,7 +42,6 @@ public class InventoryMovement {
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "sale_id")
-    @NotNull
     private Sale sale;
 
     @NotNull
@@ -53,15 +52,25 @@ public class InventoryMovement {
             MovementType movementType,
             Integer quantity,
             String reason,
-            Employee employee,
-            Sale sale
+            Employee employee
     ) {
         this.stock = stock;
+        stock.addMovement(this);
+
         this.movementType = movementType;
         this.quantity = quantity;
         this.reason = reason;
+
         this.employee = employee;
-        this.sale = sale;
+        employee.addMovement(this);
+
         this.transactionDate = LocalDateTime.now();
+    }
+
+    // ADICIONAR VENDA
+    public void addSale(Sale sale){
+        if (sale != null){
+            this.sale = sale;
+        }
     }
 }

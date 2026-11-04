@@ -1,5 +1,6 @@
 package com.motopecas.padrecicero.motopecas.padrecicero.domain.entitys;
 
+import com.motopecas.padrecicero.motopecas.padrecicero.exception.stockExceptions.InvalidNumberOfPiecesException;
 import com.motopecas.padrecicero.motopecas.padrecicero.exception.stockExceptions.TransactionAlreadyAddedException;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
@@ -50,5 +51,14 @@ public class Stock {
         }
 
         movements.add(movement);
+    }
+
+    // DAR ENTRADA DE PEÇAS NO ESTOQUE
+    public void addNewQuantityParts(Integer quantity){
+        if (quantity <= 0){
+            throw new InvalidNumberOfPiecesException("ERRO! Quantidade mínima para entrada deve ser maior que 0.");
+        }
+
+        this.currentQuantity += quantity;
     }
 }

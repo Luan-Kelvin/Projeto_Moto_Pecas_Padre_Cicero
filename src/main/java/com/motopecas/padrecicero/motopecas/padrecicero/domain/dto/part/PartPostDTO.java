@@ -19,8 +19,6 @@ public record PartPostDTO(
 
         BigDecimal sellingPrice,
 
-        Integer minimumStock,
-
-        Long creatorId
+        Integer minimumStock
 ) {
 }

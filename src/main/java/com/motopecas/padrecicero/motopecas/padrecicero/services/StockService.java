@@ -127,4 +127,16 @@ public class StockService {
         );
 
     }
+
+    // VALIDAR DISPONIBILIDADE
+    public Boolean validateAvailability(Long idPart){
+        Part part = partService.findById(idPart);
+
+        if (part.getStock().getCurrentQuantity() > 0){
+            return true;
+        }else {
+            return false;
+        }
+
+    }
 }

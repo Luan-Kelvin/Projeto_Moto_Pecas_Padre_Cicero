@@ -1,7 +1,7 @@
 package com.motopecas.padrecicero.motopecas.padrecicero.services;
 
-import com.motopecas.padrecicero.motopecas.padrecicero.domain.dto.stock.InputData;
-import com.motopecas.padrecicero.motopecas.padrecicero.domain.dto.stock.InputResponseDTO;
+import com.motopecas.padrecicero.motopecas.padrecicero.domain.dto.stock.MovementDataDTO;
+import com.motopecas.padrecicero.motopecas.padrecicero.domain.dto.stock.MovementResponseDTO;
 import com.motopecas.padrecicero.motopecas.padrecicero.domain.entitys.Employee;
 import com.motopecas.padrecicero.motopecas.padrecicero.domain.entitys.InventoryMovement;
 import com.motopecas.padrecicero.motopecas.padrecicero.domain.entitys.Part;
@@ -38,13 +38,12 @@ public class StockService {
 
     // REGISTRAR ENTRADA DE PEÇAS (OBS: USE @AUTHENTICATIONPRINCIPAL PARA PEGAR O FUNCIONARIO QUE FAZ A OPERAÇÃO, ADD NO CONTROLLER)
     @Transactional
-    public InputResponseDTO registerEntry(InputData inputData, Long idEmployee){
+    public MovementResponseDTO registerEntry(MovementDataDTO inputData, Long idEmployee){
         Part part  = partService.findById(inputData.idPart());
 
         Employee employee = employeeService.findById(idEmployee);
 
-        Stock stock = stockRepository.findById(part.getStock().getId())
-                .orElseThrow(() ->  new StockNotFoundException(String.format("ERRO! Estoque de %s, não foi enontrado.", part.getName())));
+        Stock stock = part.getStock();
 
         stock.addNewQuantityParts(inputData.quantity());
 
@@ -54,9 +53,36 @@ public class StockService {
 
         movementService.saveMovement(movement);
 
-        return new InputResponseDTO(
+        return new MovementResponseDTO(
                 InputStatus.SUCCESS,
                 inputData.quantity(),
+                stock.getId(),
+                part.getName(),
+                stock.getCurrentQuantity(),
+                movement.getId()
+        );
+    }
+
+    // REGISTRAR SAÍDA DE PEÇAS (OBS: USE @AUTHENTICATIONPRINCIPAL PARA PEGAR O FUNCIONARIO QUE FAZ A OPERAÇÃO, ADD NO CONTROLLER)
+    @Transactional
+    public MovementResponseDTO recordDeparture(MovementDataDTO dto, Long idEmployee){
+        Part part = partService.findById(dto.idPart());
+
+        Employee employee = employeeService.findById(idEmployee);
+
+        Stock stock = part.getStock();
+
+        stock.removeQuantityOfItem(dto.quantity());
+
+        InventoryMovement movement = new InventoryMovement(
+                stock, MovementType.SAIDA, dto.quantity(), null, employee
+        );
+
+        movementService.saveMovement(movement);
+
+        return new MovementResponseDTO(
+                InputStatus.SUCCESS,
+                dto.quantity(),
                 stock.getId(),
                 part.getName(),
                 stock.getCurrentQuantity(),

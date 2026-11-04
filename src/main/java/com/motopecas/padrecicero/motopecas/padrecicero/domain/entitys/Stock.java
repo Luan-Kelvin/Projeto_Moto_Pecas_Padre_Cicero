@@ -61,4 +61,15 @@ public class Stock {
 
         this.currentQuantity += quantity;
     }
+
+    // DAR SAÍDA DE PEÇAS NO ESTOQUE
+    public void removeQuantityOfItem(Integer quantity){
+        if (quantity <= 0 || quantity > this.currentQuantity){
+            throw new InvalidNumberOfPiecesException(
+                    "ERRO! Quantidade para saída deve ser maior que zero, e maior menor ou igual a quantidade atual."
+            );
+        }
+
+        this.currentQuantity -= quantity;
+    }
 }

@@ -8,6 +8,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -26,8 +27,10 @@ public class Stock {
 
     @NotNull
     @Min(value = 0, message = "ERRO! Quantidade não pode ser menor que zero.")
+    @Setter
     private Integer currentQuantity;
 
+    @Setter
     private LocalDateTime lastUpdate;
 
     @OneToOne(fetch = FetchType.LAZY)

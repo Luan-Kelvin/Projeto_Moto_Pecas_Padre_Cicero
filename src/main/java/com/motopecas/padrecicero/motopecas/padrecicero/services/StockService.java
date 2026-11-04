@@ -1,5 +1,7 @@
 package com.motopecas.padrecicero.motopecas.padrecicero.services;
 
+import com.motopecas.padrecicero.motopecas.padrecicero.domain.dto.stock.InventoryAdjustamentDataDTO;
+import com.motopecas.padrecicero.motopecas.padrecicero.domain.dto.stock.MovementAdjustmnetResponseDTO;
 import com.motopecas.padrecicero.motopecas.padrecicero.domain.dto.stock.MovementDataDTO;
 import com.motopecas.padrecicero.motopecas.padrecicero.domain.dto.stock.MovementResponseDTO;
 import com.motopecas.padrecicero.motopecas.padrecicero.domain.entitys.Employee;
@@ -13,6 +15,8 @@ import com.motopecas.padrecicero.motopecas.padrecicero.repository.StockRepositor
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
 
 @Service
 public class StockService {
@@ -52,9 +56,11 @@ public class StockService {
         );
 
         movementService.saveMovement(movement);
+        stock.setLastUpdate(LocalDateTime.now());
 
         return new MovementResponseDTO(
                 InputStatus.SUCCESS,
+                MovementType.ENTRADA,
                 inputData.quantity(),
                 stock.getId(),
                 part.getName(),
@@ -79,14 +85,46 @@ public class StockService {
         );
 
         movementService.saveMovement(movement);
+        stock.setLastUpdate(LocalDateTime.now());
 
         return new MovementResponseDTO(
                 InputStatus.SUCCESS,
+                MovementType.SAIDA,
                 dto.quantity(),
                 stock.getId(),
                 part.getName(),
                 stock.getCurrentQuantity(),
                 movement.getId()
         );
+    }
+
+    // REALIZAR AJUSTE NO ESTOQUE (OBS: USE @AUTHENTICATIONPRINCIPAL PARA PEGAR O FUNCIONARIO QUE FAZ A OPERAÇÃO, ADD NO CONTROLLER)
+    public MovementAdjustmnetResponseDTO performAdjustament(InventoryAdjustamentDataDTO dto, Long idEmployee){
+        Part part = partService.findById(dto.idParty());
+
+        Employee employee = employeeService.findById(idEmployee);
+
+        Stock stock = part.getStock();
+
+        stock.setCurrentQuantity(dto.currentQuantity());
+        stock.setLastUpdate(LocalDateTime.now());
+
+        InventoryMovement movement = new InventoryMovement(
+                stock, MovementType.AJUSTE, dto.currentQuantity(), dto.reason(), employee
+        );
+
+        movementService.saveMovement(movement);
+
+        return new MovementAdjustmnetResponseDTO(
+                InputStatus.SUCCESS,
+                MovementType.SAIDA,
+                dto.currentQuantity(),
+                dto.reason(),
+                stock.getId(),
+                part.getName(),
+                stock.getCurrentQuantity(),
+                movement.getId()
+        );
+
     }
 }

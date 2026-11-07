@@ -58,7 +58,7 @@ public class PartService {
     }
 
     // LISTAR PEÇAS CADASTRADAS COM PAGINAÇÃO
-    @Transactional
+    @Transactional(readOnly = true)
     public Page<PartGetDTO> listParts(Pageable pageable){
         Page<Part> parts = partRepository.findAll(pageable);
 
@@ -66,7 +66,7 @@ public class PartService {
     }
 
     // BUSCAR PEÇA PELO ID (CONTROLLER)
-    @Transactional
+    @Transactional(readOnly = true)
     public PartGetDTO findByIdController(Long id){
         Part part = partRepository.findById(id)
                 .orElseThrow(() -> new PartNotFoundException(String.format("ERRO! Peça com ID = %s, não foi enontrda.", id)));
@@ -75,7 +75,7 @@ public class PartService {
     }
 
     // BUSCAR PEÇA PELO ID (CLASSES)
-    @Transactional
+    @Transactional(readOnly = true)
     public Part findById(Long id){
         return partRepository.findById(id)
                 .orElseThrow(() -> new PartNotFoundException(String.format("ERRO! Peça com ID = %s, não foi enontrda.", id)));
@@ -83,7 +83,7 @@ public class PartService {
     }
 
     // EXIBIR TODAS AS PEÇAS QUE CONTENHA O NOME DIGITADO
-    @Transactional
+    @Transactional(readOnly = true)
     public Page<PartGetDTO> searchPartByName(String name) {
         Page<Part> parts = partRepository.findByNameContaining(name);
 
@@ -97,16 +97,24 @@ public class PartService {
                 .orElseThrow(() -> new PartNotFoundException(String.format("ERRO! Peça com ID = %s, não foi enontrda.", dto.id())
                 ));
 
+        if (dto.costPrice() != null && dto.sellingPrice() == null){
+            throw new IllegalArgumentException("ERRO! Para alterar o preço de custo o preço de venda também precisa ser atualizado.");
+        }
+
         if (dto.name() != null && !dto.name().equals(part.getName())){
             part.setName(dto.name());
         }
 
-        if (dto.description() != null && !dto.description().equals(part.getDescription())){
-            part.setDescription(dto.description());
-        }
-
         if (dto.mark() != null && !dto.mark().equals(part.getMark())){
             part.setMark(dto.mark());
+        }
+
+        if (partRepository.existsByNameAndMark(dto.name(), dto.mark())){
+            throw new PartAlreadyExistsException("ERRO! Peça ja está cadastrada.");
+        }
+
+        if (dto.description() != null && !dto.description().equals(part.getDescription())){
+            part.setDescription(dto.description());
         }
 
         if (dto.category() != null && !dto.category().equals(part.getCategory())){
@@ -164,13 +172,14 @@ public class PartService {
     }
 
     // BUSCAR PEÇAS COM ESTOQUE BAIXO
+    @Transactional(readOnly = true)
     public Page<PartGetDTO> searchForItemsWithLowStock(Pageable pageable){
         Page<Part> parts = partRepository.searchForItemsWithLowStock(pageable);
 
         return parts.map(conversor::converterPart);
     }
 
-    @Transactional
+
     private String generatePartCode() {
         partRepository.incrementPartCode();
 

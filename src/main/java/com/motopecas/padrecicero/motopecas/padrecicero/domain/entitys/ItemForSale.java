@@ -41,10 +41,11 @@ public class ItemForSale {
     private Part part;
 
 
-    public ItemForSale(Integer quantity, BigDecimal unitPrice, Part part) {
+    public ItemForSale(Integer quantity, BigDecimal unitPrice, Part part, Sale sale) {
         this.quantity = quantity;
         this.unitPrice = unitPrice;
         this.part = part;
+        this.sale = sale;
         this.subtotal = calculateSubtotal(quantity, unitPrice);
     }
 

@@ -8,6 +8,7 @@ import jakarta.validation.constraints.Positive;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -33,6 +34,7 @@ public class Payment {
 
     @NotNull
     @Enumerated(EnumType.STRING)
+    @Setter
     private PaymentStatus paymentStatus;
 
     @NotNull

@@ -8,6 +8,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -37,6 +38,7 @@ public class Sale {
 
     @Enumerated(EnumType.STRING)
     @NotNull
+    @Setter
     private StatusSale statusSale;
 
     @OneToMany(mappedBy = "sale", fetch = FetchType.LAZY)
@@ -47,20 +49,19 @@ public class Sale {
     @NotNull
     private Employee employee;
 
-    @OneToOne(mappedBy = "sale", fetch = FetchType.LAZY)
+    @OneToOne(mappedBy = "sale", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Payment paymentInfo;
 
     public Sale(
             String saleCode,
             LocalDate dateOfSale,
-            BigDecimal totalValue,
             Employee employee
     ) {
         this.saleCode = saleCode;
         this.dateOfSale = dateOfSale;
-        this.totalValue = totalValue;
         this.employee = employee;
         this.statusSale = StatusSale.ABERTA;
+        this.totalValue = BigDecimal.ZERO;
     }
 
     // ADICIONAR ITEM A LISTA DE ITENS DE VENDAS
@@ -68,6 +69,13 @@ public class Sale {
         itemForSales.add(item);
 
         item.addSale(this);
+    }
+
+    // REMOVER ITEM DA LISTA DE VENDAS
+    public void removeItemForSale(ItemForSale item){
+        if (itemForSales.contains(item)){
+            itemForSales.remove(item);
+        }
     }
 
     // ADICIONAR FUNCIONARIO
@@ -82,5 +90,16 @@ public class Sale {
     // ADICIONAR FORMA DE PAGAMENTO
     public void addPayment(Payment payment){
         this.paymentInfo = payment;
+    }
+
+    // CALCULAR VALOR TOTAL DA COMPRA
+    public void calculatePurchaseAmount(){
+        BigDecimal total = BigDecimal.ZERO;
+
+        for (ItemForSale i : this.itemForSales){
+            total.add(i.getSubtotal());
+        }
+
+        this.totalValue.add(total);
     }
 }

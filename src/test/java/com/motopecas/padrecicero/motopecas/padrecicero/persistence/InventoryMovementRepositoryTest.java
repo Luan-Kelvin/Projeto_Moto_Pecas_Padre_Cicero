@@ -55,7 +55,7 @@ public class InventoryMovementRepositoryTest {
         entityManager.persistAndFlush(stock);
 
         InventoryMovement inventoryMovement = new InventoryMovement(
-                stock, MovementType.SAIDA, 3, "Envio para garantia", employee, sale
+                stock, MovementType.SAIDA, 3, "Envio para garantia", employee
         );
 
         InventoryMovement movementSaved = inventoryMovementRepository.save(inventoryMovement);
@@ -91,7 +91,7 @@ public class InventoryMovementRepositoryTest {
         entityManager.persistAndFlush(stock);
 
         InventoryMovement inventoryMovement = new InventoryMovement(
-                stock, MovementType.SAIDA, 3, "Envio para garantia", employee, sale
+                stock, MovementType.SAIDA, 3, "Envio para garantia", employee
         );
 
         InventoryMovement movementSaved = inventoryMovementRepository.save(inventoryMovement);
@@ -131,7 +131,7 @@ public class InventoryMovementRepositoryTest {
         entityManager.persistAndFlush(stock);
 
         InventoryMovement inventoryMovement = new InventoryMovement(
-                stock, MovementType.SAIDA, 3, "Envio para garantia", employee, sale
+                stock, MovementType.SAIDA, 3, "Envio para garantia", employee
         );
 
         inventoryMovementRepository.save(inventoryMovement);

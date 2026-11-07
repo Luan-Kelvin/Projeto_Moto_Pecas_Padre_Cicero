@@ -3,14 +3,12 @@ package com.motopecas.padrecicero.motopecas.padrecicero.services;
 import com.motopecas.padrecicero.motopecas.padrecicero.domain.dto.stock.InventoryAdjustamentDataDTO;
 import com.motopecas.padrecicero.motopecas.padrecicero.domain.dto.stock.MovementAdjustmnetResponseDTO;
 import com.motopecas.padrecicero.motopecas.padrecicero.domain.dto.stock.MovementDataDTO;
-import com.motopecas.padrecicero.motopecas.padrecicero.domain.dto.stock.MovementResponseDTO;
 import com.motopecas.padrecicero.motopecas.padrecicero.domain.entitys.Employee;
 import com.motopecas.padrecicero.motopecas.padrecicero.domain.entitys.InventoryMovement;
 import com.motopecas.padrecicero.motopecas.padrecicero.domain.entitys.Part;
 import com.motopecas.padrecicero.motopecas.padrecicero.domain.entitys.Stock;
 import com.motopecas.padrecicero.motopecas.padrecicero.domain.enuns.InputStatus;
 import com.motopecas.padrecicero.motopecas.padrecicero.domain.enuns.MovementType;
-import com.motopecas.padrecicero.motopecas.padrecicero.exception.stockExceptions.StockNotFoundException;
 import com.motopecas.padrecicero.motopecas.padrecicero.repository.StockRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -42,7 +40,9 @@ public class StockService {
 
     // REGISTRAR ENTRADA DE PEÇAS (OBS: USE @AUTHENTICATIONPRINCIPAL PARA PEGAR O FUNCIONARIO QUE FAZ A OPERAÇÃO, ADD NO CONTROLLER)
     @Transactional
-    public MovementResponseDTO registerEntry(MovementDataDTO inputData, Long idEmployee){
+    public void registerEntry(MovementDataDTO inputData, Long idEmployee){
+        validatePositiveQuantity(inputData.quantity());
+
         Part part  = partService.findById(inputData.idPart());
 
         Employee employee = employeeService.findById(idEmployee);
@@ -52,26 +52,18 @@ public class StockService {
         stock.addNewQuantityParts(inputData.quantity());
 
         InventoryMovement movement = new InventoryMovement(
-                stock, MovementType.ENTRADA, inputData.quantity(), null, employee
+                stock, MovementType.ENTRADA , inputData.quantity(), null, employee
         );
 
         movementService.saveMovement(movement);
         stock.setLastUpdate(LocalDateTime.now());
-
-        return new MovementResponseDTO(
-                InputStatus.SUCCESS,
-                MovementType.ENTRADA,
-                inputData.quantity(),
-                stock.getId(),
-                part.getName(),
-                stock.getCurrentQuantity(),
-                movement.getId()
-        );
     }
 
     // REGISTRAR SAÍDA DE PEÇAS (OBS: USE @AUTHENTICATIONPRINCIPAL PARA PEGAR O FUNCIONARIO QUE FAZ A OPERAÇÃO, ADD NO CONTROLLER)
     @Transactional
-    public MovementResponseDTO recordDeparture(MovementDataDTO dto, Long idEmployee){
+    public void recordDeparture(MovementDataDTO dto, Long idEmployee){
+        validatePositiveQuantity(dto.quantity());
+
         Part part = partService.findById(dto.idPart());
 
         Employee employee = employeeService.findById(idEmployee);
@@ -86,19 +78,11 @@ public class StockService {
 
         movementService.saveMovement(movement);
         stock.setLastUpdate(LocalDateTime.now());
-
-        return new MovementResponseDTO(
-                InputStatus.SUCCESS,
-                MovementType.SAIDA,
-                dto.quantity(),
-                stock.getId(),
-                part.getName(),
-                stock.getCurrentQuantity(),
-                movement.getId()
-        );
     }
 
+
     // REALIZAR AJUSTE NO ESTOQUE (OBS: USE @AUTHENTICATIONPRINCIPAL PARA PEGAR O FUNCIONARIO QUE FAZ A OPERAÇÃO, ADD NO CONTROLLER)
+    @Transactional
     public MovementAdjustmnetResponseDTO performAdjustament(InventoryAdjustamentDataDTO dto, Long idEmployee){
         Part part = partService.findById(dto.idParty());
 
@@ -117,7 +101,7 @@ public class StockService {
 
         return new MovementAdjustmnetResponseDTO(
                 InputStatus.SUCCESS,
-                MovementType.SAIDA,
+                MovementType.AJUSTE,
                 dto.currentQuantity(),
                 dto.reason(),
                 stock.getId(),
@@ -138,5 +122,13 @@ public class StockService {
             return false;
         }
 
+    }
+
+
+    // VALIDAR QUANTIDADE POSITIVA
+    private void validatePositiveQuantity(Integer quantity){
+        if (quantity == null || quantity <= 0){
+            throw new IllegalArgumentException("A quantidade deve ser maior que zero.");
+        }
     }
 }

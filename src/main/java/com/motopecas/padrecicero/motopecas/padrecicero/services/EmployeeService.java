@@ -5,7 +5,6 @@ import com.motopecas.padrecicero.motopecas.padrecicero.domain.dto.employee.Emplo
 import com.motopecas.padrecicero.motopecas.padrecicero.domain.dto.employee.EmployeePostDTO;
 import com.motopecas.padrecicero.motopecas.padrecicero.domain.dto.employee.EmployeePutDTO;
 import com.motopecas.padrecicero.motopecas.padrecicero.domain.entitys.Employee;
-import com.motopecas.padrecicero.motopecas.padrecicero.domain.enuns.JobType;
 import com.motopecas.padrecicero.motopecas.padrecicero.exception.emplyeeExceptions.EmployeeAlreadyExistsException;
 import com.motopecas.padrecicero.motopecas.padrecicero.exception.emplyeeExceptions.EmployeeInactiveException;
 import com.motopecas.padrecicero.motopecas.padrecicero.exception.emplyeeExceptions.EmployeeNoFoundException;
@@ -20,9 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -58,7 +55,7 @@ public class EmployeeService {
     }
 
     // LISTAR FUNCIONÁRIOS
-    @Transactional
+    @Transactional(readOnly = true)
     public Page<EmployeeGetDTO> listEmployee(Pageable pageable){
         Page<Employee> list = employeeRepository.findAll(pageable);
 
@@ -66,7 +63,7 @@ public class EmployeeService {
     }
 
     // BUSCAR FUNCIONÁRIO ATRAVÉS DO ID (CONTROLLER)
-    @Transactional
+    @Transactional(readOnly = true)
     public EmployeeGetDTO findByIdController(Long id){
         Employee employee = employeeRepository.findById(id)
                 .orElseThrow(
@@ -77,7 +74,7 @@ public class EmployeeService {
     }
 
     // BUSCAR FUNCIONÁRIO ATRAVÉS DO ID (DEMAIS CLASSES DE SERVIÇO)
-    @Transactional
+    @Transactional(readOnly = true)
     public Employee findById(Long id){
         return employeeRepository.findById(id)
                 .orElseThrow(
@@ -107,10 +104,6 @@ public class EmployeeService {
             }
 
             employee.changeEmail(dto.email());
-        }
-
-        if (dto.jobType() != null){
-            employee.setJobType(dto.jobType());
         }
 
         if (emailChanged){
@@ -146,6 +139,10 @@ public class EmployeeService {
     public void verifyEmail(String token){
         Employee employee = employeeRepository.findByVerificationToken(token)
                 .orElseThrow(() -> new EmployeeNoFoundException("ERRO! Não foi encontrado nenhum funcionário com token informado."));
+
+        if (employee.getVerificationTokenExpiration().isBefore(LocalDateTime.now())) {
+            throw new EmployeeInactiveException("ERRO! Token expirado.");
+        }
 
         employee.toCheck();
     }

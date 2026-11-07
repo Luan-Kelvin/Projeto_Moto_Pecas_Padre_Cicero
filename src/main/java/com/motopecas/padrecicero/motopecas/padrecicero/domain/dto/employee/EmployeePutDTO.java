@@ -9,8 +9,6 @@ public record EmployeePutDTO(
 
         String name,
 
-        String email,
-
-        JobType jobType
+        String email
 ) {
 }

@@ -48,7 +48,7 @@ public class InventoryMovementRepositoryTest {
         );
         entityManager.persistAndFlush(part);
 
-        Sale sale = new Sale("12345", LocalDate.now(), BigDecimal.valueOf(300), employee);
+        Sale sale = new Sale("12345", LocalDate.now(),  employee);
         entityManager.persistAndFlush(sale);
 
         Stock stock = new Stock(part);
@@ -84,7 +84,7 @@ public class InventoryMovementRepositoryTest {
         );
         entityManager.persistAndFlush(part);
 
-        Sale sale = new Sale("12345", LocalDate.now(), BigDecimal.valueOf(300), employee);
+        Sale sale = new Sale("12345", LocalDate.now(),  employee);
         entityManager.persistAndFlush(sale);
 
         Stock stock = new Stock(part);
@@ -124,7 +124,7 @@ public class InventoryMovementRepositoryTest {
         );
         entityManager.persistAndFlush(part);
 
-        Sale sale = new Sale("12345", LocalDate.now(), BigDecimal.valueOf(300), employee);
+        Sale sale = new Sale("12345", LocalDate.now(), employee);
         entityManager.persistAndFlush(sale);
 
         Stock stock = new Stock(part);

@@ -37,7 +37,7 @@ public class PaymentRepositoryTest {
         );
         entityManager.persistAndFlush(employee);
 
-        Sale sale = new Sale("12345", LocalDate.now(), BigDecimal.valueOf(300), employee);
+        Sale sale = new Sale("12345", LocalDate.now(), employee);
         entityManager.persistAndFlush(sale);
 
         Payment payment = new Payment(BigDecimal.valueOf(300), PaymentMethod.PIX, null, sale);
@@ -57,7 +57,7 @@ public class PaymentRepositoryTest {
         );
         entityManager.persistAndFlush(employee);
 
-        Sale sale = new Sale("12345", LocalDate.now(), BigDecimal.valueOf(300), employee);
+        Sale sale = new Sale("12345", LocalDate.now(), employee);
         entityManager.persistAndFlush(sale);
 
         Payment payment = new Payment(BigDecimal.valueOf(300), PaymentMethod.PIX, null, sale);
@@ -85,7 +85,7 @@ public class PaymentRepositoryTest {
         );
         entityManager.persistAndFlush(employee);
 
-        Sale sale = new Sale("12345", LocalDate.now(), BigDecimal.valueOf(300), employee);
+        Sale sale = new Sale("12345", LocalDate.now(), employee);
         entityManager.persistAndFlush(sale);
 
         Payment payment = new Payment(BigDecimal.valueOf(300), PaymentMethod.PIX, null, sale);

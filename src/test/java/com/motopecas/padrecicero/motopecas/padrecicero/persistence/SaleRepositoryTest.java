@@ -35,7 +35,7 @@ public class SaleRepositoryTest {
         );
         entityManager.persistAndFlush(employee);
 
-        Sale sale = new Sale("12345", LocalDate.now(), BigDecimal.valueOf(300), employee);
+        Sale sale = new Sale("12345", LocalDate.now(), employee);
 
         Sale saleSaved = saleRepository.save(sale);
         entityManager.flush();
@@ -54,7 +54,7 @@ public class SaleRepositoryTest {
         );
         entityManager.persistAndFlush(employee);
 
-        Sale sale = new Sale("12345", LocalDate.now(), BigDecimal.valueOf(300), employee);
+        Sale sale = new Sale("12345", LocalDate.now(), employee);
         saleRepository.save(sale);
         entityManager.flush();
 
@@ -79,7 +79,7 @@ public class SaleRepositoryTest {
         );
         entityManager.persistAndFlush(employee);
 
-        Sale sale = new Sale("12345", LocalDate.now(), BigDecimal.valueOf(300), employee);
+        Sale sale = new Sale("12345", LocalDate.now(),  employee);
         saleRepository.save(sale);
         entityManager.flush();
 

@@ -59,6 +59,10 @@ public class EmployeeService {
     public Page<EmployeeGetDTO> listEmployee(Pageable pageable){
         Page<Employee> list = employeeRepository.findAll(pageable);
 
+        if (list.isEmpty()){
+            return Page.empty();
+        }
+
         return list.map(conversor::converterEmployee);
     }
 

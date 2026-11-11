@@ -173,4 +173,8 @@ public class Employee implements UserDetails {
       this.verificationToken = UUID.randomUUID().toString();
       this.verificationTokenExpiration =LocalDateTime.now().plusMinutes(30);
   }
+
+  public void deActive(){
+        this.active = false;
+  }
 }

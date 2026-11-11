@@ -50,10 +50,10 @@ public class ItemForSaleRepositoryTest {
         );
         entityManager.persistAndFlush(part);
 
-        Sale sale = new Sale("123456", LocalDate.now(), BigDecimal.valueOf(200) ,employee);
+        Sale sale = new Sale("123456", LocalDate.now(),employee);
         entityManager.persistAndFlush(sale);
 
-        ItemForSale item = new ItemForSale(5, BigDecimal.valueOf(22.0) ,part);
+        ItemForSale item = new ItemForSale(5, BigDecimal.valueOf(22.0) ,part, sale);
         item.addSale(sale);
 
         ItemForSale itemSaved = itemForSaleRepository.save(item);
@@ -82,10 +82,10 @@ public class ItemForSaleRepositoryTest {
         );
         entityManager.persistAndFlush(part);
 
-        Sale sale = new Sale("123456", LocalDate.now(), BigDecimal.valueOf(200) ,employee);
+        Sale sale = new Sale("123456", LocalDate.now(),employee);
         entityManager.persistAndFlush(sale);
 
-        ItemForSale item = new ItemForSale(5, BigDecimal.valueOf(22.0) ,part);
+        ItemForSale item = new ItemForSale(5, BigDecimal.valueOf(22.0) ,part, sale);
         item.addSale(sale);
 
         itemForSaleRepository.save(item);
@@ -118,10 +118,10 @@ public class ItemForSaleRepositoryTest {
         );
         entityManager.persistAndFlush(part);
 
-        Sale sale = new Sale("123456", LocalDate.now(), BigDecimal.valueOf(200) ,employee);
+        Sale sale = new Sale("123456", LocalDate.now(),employee);
         entityManager.persistAndFlush(sale);
 
-        ItemForSale item = new ItemForSale(5, BigDecimal.valueOf(22.0) ,part);
+        ItemForSale item = new ItemForSale(5, BigDecimal.valueOf(22.0) ,part, sale);
         item.addSale(sale);
 
         itemForSaleRepository.save(item);

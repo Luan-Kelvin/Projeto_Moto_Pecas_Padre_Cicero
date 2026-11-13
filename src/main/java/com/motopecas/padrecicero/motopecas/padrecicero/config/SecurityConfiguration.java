@@ -1,7 +1,6 @@
 package com.motopecas.padrecicero.motopecas.padrecicero.config;
 
 import com.motopecas.padrecicero.motopecas.padrecicero.security.SecurityFilter;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -16,11 +15,8 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration
 public class SecurityConfiguration {
 
-    @Autowired
-    private SecurityFilter filter;
-
     @Bean
-    private SecurityFilterChain securityFilterChain(HttpSecurity http){
+    SecurityFilterChain securityFilterChain(HttpSecurity http, SecurityFilter filter){
         return http
                 .csrf(csrf  -> csrf.disable())
                 .sessionManagement(
@@ -32,12 +28,12 @@ public class SecurityConfiguration {
     }
 
     @Bean
-    private AuthenticationManager authenticationManager(AuthenticationConfiguration configuration){
+    AuthenticationManager authenticationManager(AuthenticationConfiguration configuration){
         return configuration.getAuthenticationManager();
     }
 
     @Bean
-    private PasswordEncoder passwordEncoder(){
+    PasswordEncoder passwordEncoder(){
         return new BCryptPasswordEncoder();
     }
 }

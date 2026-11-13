@@ -5,8 +5,6 @@ import com.motopecas.padrecicero.motopecas.padrecicero.domain.enuns.PartCategory
 import java.math.BigDecimal;
 
 public record PartPostDTO(
-        String partCode,
-
         String name,
 
         String description,

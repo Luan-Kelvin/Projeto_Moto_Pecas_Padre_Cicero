@@ -32,7 +32,7 @@ public class SecurityFilter extends OncePerRequestFilter {
             if (token != null){
                 String email = tokenService.validateTokenAccess(token);
 
-                Employee employee = employeeRepository.findByEmailAddVerificadTrue(email).orElseThrow();
+                Employee employee = employeeRepository.findByEmailAndVerifiedTrue(email).orElseThrow();
 
                 var auth = new UsernamePasswordAuthenticationToken(employee, null, employee.getAuthorities());
                 SecurityContextHolder.getContext().setAuthentication(auth);

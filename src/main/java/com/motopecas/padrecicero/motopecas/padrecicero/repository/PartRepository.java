@@ -15,6 +15,8 @@ public interface PartRepository extends JpaRepository<Part, Long> {
 
     boolean existsByNameAndMark(String name, String mark);
 
+    boolean existsByNameAndMarkAndIdNot(String name, String mark, Long id);
+
     @Modifying
     @Query(value = """
     UPDATE part_code_sequence
@@ -26,7 +28,7 @@ public interface PartRepository extends JpaRepository<Part, Long> {
     @Query(value = "SELECT LAST_INSERT_ID()", nativeQuery = true)
     Long generatePartCode();
 
-    Page<Part> findByNameContaining(String name);
+    Page<Part> findByNameContaining(String name, Pageable pageable);
 
     @Query("""
             SELECT p 

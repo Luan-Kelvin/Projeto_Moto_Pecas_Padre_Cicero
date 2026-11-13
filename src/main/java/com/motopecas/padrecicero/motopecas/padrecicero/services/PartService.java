@@ -31,7 +31,7 @@ public class PartService {
     // CADASTRAR NOVA PEÇA OBS: USE @AUTHENTICATIONPRINCIPAL PARA PEGAR O FUNCIONARIO QUE FAZ A OPERAÇÃO, ADD NO CONTROLLER)
     @Transactional
     public PartGetDTO registerPart(PartPostDTO dto, Long idEmployee){
-        if(partRepository.existsByNameAndMark(dto.name(), dto.mark())){
+        if (partRepository.existsByNameAndMark(dto.name(), dto.mark())){
             throw new PartAlreadyExistsException("ERRO! Peça ja está cadastrada.");
         }
 
@@ -84,8 +84,8 @@ public class PartService {
 
     // EXIBIR TODAS AS PEÇAS QUE CONTENHA O NOME DIGITADO
     @Transactional(readOnly = true)
-    public Page<PartGetDTO> searchPartByName(String name) {
-        Page<Part> parts = partRepository.findByNameContaining(name);
+    public Page<PartGetDTO> searchPartByName(String name, Pageable pageable) {
+        Page<Part> parts = partRepository.findByNameContaining(name, pageable);
 
         return parts.map(conversor::converterPart);
     }
@@ -101,19 +101,24 @@ public class PartService {
             throw new IllegalArgumentException("ERRO! Para alterar o preço de custo o preço de venda também precisa ser atualizado.");
         }
 
-        if (dto.name() != null && !dto.name().equals(part.getName())){
-            part.setName(dto.name());
-        }
+       String newName = dto.name() != null ? dto.name() : part.getName();
+       String newMark = dto.mark() != null ? dto.mark() : part.getMark();
 
-        if (dto.mark() != null && !dto.mark().equals(part.getMark())){
-            part.setMark(dto.mark());
-        }
+       boolean identityChanged = !newName.equals(part.getName()) || !newMark.equals(part.getMark());
 
-        if (partRepository.existsByNameAndMark(dto.name(), dto.mark())){
+        if (identityChanged && partRepository.existsByNameAndMarkAndIdNot(newName, newMark, dto.id())){
             throw new PartAlreadyExistsException("ERRO! Peça ja está cadastrada.");
         }
 
-        if (dto.description() != null && !dto.description().equals(part.getDescription())){
+         if (dto.name() != null && !dto.name().equals(part.getName())){
+             part.setName(dto.name());
+         }
+
+         if (dto.mark() != null && !dto.mark().equals(part.getMark())){
+             part.setMark(dto.mark());
+         }
+
+         if (dto.description() != null && !dto.description().equals(part.getDescription())){
             part.setDescription(dto.description());
         }
 

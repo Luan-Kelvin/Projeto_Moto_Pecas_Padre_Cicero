@@ -23,7 +23,7 @@ public class LoginController {
     private EmployeeService employeeService;
 
     @PostMapping("/auth/login")
-    public ResponseEntity<TokenResponseDTO> login(@RequestParam @Valid LoginDTO login){
+    public ResponseEntity<TokenResponseDTO> login(@RequestBody @Valid LoginDTO login){
         return ResponseEntity.ok().body(tokenService.authenticate(login));
     }
 

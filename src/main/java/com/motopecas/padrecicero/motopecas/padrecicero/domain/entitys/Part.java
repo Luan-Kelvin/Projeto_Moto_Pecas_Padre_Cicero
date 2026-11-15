@@ -108,5 +108,10 @@ public class Part {
         this.sellingPrice = value;
     }
 
+    // ADICIONAR ESTOQUE
+    public void addStock(Stock stock){
+        this.stock = stock;
+    }
+
 
 }

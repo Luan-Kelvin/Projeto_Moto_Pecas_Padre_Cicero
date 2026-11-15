@@ -5,10 +5,7 @@ import com.motopecas.padrecicero.motopecas.padrecicero.domain.dto.sale.ResponseC
 import com.motopecas.padrecicero.motopecas.padrecicero.domain.dto.sale.ResponseItemForSaleDTO;
 import com.motopecas.padrecicero.motopecas.padrecicero.domain.dto.sale.SaleConclusionDTO;
 import com.motopecas.padrecicero.motopecas.padrecicero.domain.dto.stock.MovementDataDTO;
-import com.motopecas.padrecicero.motopecas.padrecicero.domain.dto.stock.MovementResponseDTO;
 import com.motopecas.padrecicero.motopecas.padrecicero.domain.entitys.*;
-import com.motopecas.padrecicero.motopecas.padrecicero.domain.enuns.InputStatus;
-import com.motopecas.padrecicero.motopecas.padrecicero.domain.enuns.MovementType;
 import com.motopecas.padrecicero.motopecas.padrecicero.domain.enuns.PaymentStatus;
 import com.motopecas.padrecicero.motopecas.padrecicero.domain.enuns.StatusSale;
 import com.motopecas.padrecicero.motopecas.padrecicero.exception.emplyeeExceptions.EmployeeInactiveException;
@@ -53,7 +50,7 @@ public class SaleService {
 
         Employee employee = employeeService.findById(idEmployee);
 
-        if (!Boolean.TRUE.equals(employee.getActive()) || Boolean.TRUE.equals(employee.getVerified())){
+        if (!Boolean.TRUE.equals(employee.getActive()) || !Boolean.TRUE.equals(employee.getVerified())){
             throw new EmployeeInactiveException("ERRO! Funcionário inativo ou não verificado.");
         }
 

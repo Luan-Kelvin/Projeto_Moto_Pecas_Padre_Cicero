@@ -42,9 +42,15 @@ public class Stock {
     private List<InventoryMovement> movements = new ArrayList<>();
 
     public Stock(Part part) {
-        this.part = part;
+        addPart(part);
         this.currentQuantity = 0;
         this.lastUpdate = LocalDateTime.now();
+    }
+
+    // ADICONAR PEÇA
+    private void addPart(Part part){
+        this.part = part;
+        part.addStock(this);
     }
 
     // ADICIONAR NOVA MOVMENTAÇÃO NO ESTOQUE

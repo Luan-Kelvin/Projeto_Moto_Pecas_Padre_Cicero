@@ -177,4 +177,8 @@ public class Employee implements UserDetails {
   public void deActive(){
         this.active = false;
   }
+
+  public void activate(){
+        this.active = true;
+  }
 }

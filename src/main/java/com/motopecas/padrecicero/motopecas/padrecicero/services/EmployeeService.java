@@ -1,9 +1,6 @@
 package com.motopecas.padrecicero.motopecas.padrecicero.services;
 
-import com.motopecas.padrecicero.motopecas.padrecicero.domain.dto.employee.ChangeEmployeeJobDTO;
-import com.motopecas.padrecicero.motopecas.padrecicero.domain.dto.employee.EmployeeGetDTO;
-import com.motopecas.padrecicero.motopecas.padrecicero.domain.dto.employee.EmployeePostDTO;
-import com.motopecas.padrecicero.motopecas.padrecicero.domain.dto.employee.EmployeePutDTO;
+import com.motopecas.padrecicero.motopecas.padrecicero.domain.dto.employee.*;
 import com.motopecas.padrecicero.motopecas.padrecicero.domain.entitys.Employee;
 import com.motopecas.padrecicero.motopecas.padrecicero.exception.emplyeeExceptions.EmployeeAlreadyExistsException;
 import com.motopecas.padrecicero.motopecas.padrecicero.exception.emplyeeExceptions.EmployeeInactiveException;
@@ -14,6 +11,7 @@ import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -133,6 +131,22 @@ public class EmployeeService {
 
         if (changedJob){
             employee.setJobType(dto.newJob());
+        }
+
+        return conversor.converterEmployee(employee);
+    }
+
+    //ATIVAR E DESATIVAR CONTAS
+    @Transactional
+    public EmployeeGetDTO activateAndDesactivateEmployee(AccountStatusDTO dto) {
+        Employee employee = employeeRepository.findById(dto.id())
+                .orElseThrow(() -> new EmployeeNoFoundException(
+                        String.format("ERRO! Funcionário com ID = %s, não foi encontrado.", dto.id())));
+
+        if (Boolean.TRUE.equals(dto.status())) {
+            employee.activate();
+        } else {
+            employee.deActive();
         }
 
         return conversor.converterEmployee(employee);

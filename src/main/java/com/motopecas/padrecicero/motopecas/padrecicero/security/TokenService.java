@@ -43,7 +43,7 @@ public class TokenService {
     }
 
     // GERAR TOKEN DE ACESSO
-    private String generateToken(Employee employee){
+    public String generateToken(Employee employee){
         try {
             Algorithm algorithm = Algorithm.HMAC256(secret);
             return JWT.create()
@@ -89,7 +89,7 @@ public class TokenService {
         }
     }
 
-    // VERIFICAR E VALIDAR TOKEN DE ACESSO
+    // VERIFICAR E VALIDAR REFRESH TOKEN
     public String validateRefreshToken(String refreshToken){
         try {
             Algorithm algorithm = Algorithm.HMAC256(secret);

@@ -52,7 +52,7 @@ public class EmailVerificationService {
                     Por favor, clique no link abaixo para verificar sua conta: <br>
                     <h3><a href=\"%s\" target=\"_self\">VERIFICAR</a></h3>
                     Moto Peças Padre Cícero :)
-                """, employee.getName(), URL_SITE + "/employee/verify-account?token=" + employee.getVerificationToken());
+                """, employee.getName(), URL_SITE + "/employee/auth/verify-account?token=" + employee.getVerificationToken());
 
         sendMail(employee.getEmail(), subject, content);
     }

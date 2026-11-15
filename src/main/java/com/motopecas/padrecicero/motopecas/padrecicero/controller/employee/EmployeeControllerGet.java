@@ -1,5 +1,6 @@
-package com.motopecas.padrecicero.motopecas.padrecicero.controller.get;
+package com.motopecas.padrecicero.motopecas.padrecicero.controller.employee;
 
+import com.motopecas.padrecicero.motopecas.padrecicero.domain.dto.employee.EmployeeGetDTO;
 import com.motopecas.padrecicero.motopecas.padrecicero.services.EmployeeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -15,11 +16,8 @@ public class EmployeeControllerGet {
     @Autowired
     private EmployeeService employeeService;
 
-    @GetMapping("/verify-account")
-    public ResponseEntity<String> verifyEmail(@RequestParam String token){
-        employeeService.verifyEmail(token);
-
-        return ResponseEntity.ok().body("Funcionário verificado com sucesso!");
+    @GetMapping("/id/{id}")
+    public ResponseEntity<EmployeeGetDTO> findById(@RequestParam("id") Long id){
+        return ResponseEntity.ok().body(employeeService.findByIdController(id));
     }
-
 }

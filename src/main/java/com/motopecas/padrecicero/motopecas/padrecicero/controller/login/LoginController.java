@@ -13,7 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/auth")
+@RequestMapping("/api")
 public class LoginController {
 
     @Autowired
@@ -22,12 +22,12 @@ public class LoginController {
     @Autowired
     private EmployeeService employeeService;
 
-    @PostMapping("/login")
+    @PostMapping("/auth/login")
     public ResponseEntity<TokenResponseDTO> login(@RequestParam @Valid LoginDTO login){
         return ResponseEntity.ok().body(tokenService.authenticate(login));
     }
 
-    @PostMapping("/refresh")
+    @PostMapping("/auth/refresh")
     public ResponseEntity<TokenAcessDTO> refresh(@RequestParam RefreshTokeDTO refreshTokeDTO){
         Long getSubject = Long.valueOf(tokenService.validateRefreshToken(refreshTokeDTO.refreshToken()));
 

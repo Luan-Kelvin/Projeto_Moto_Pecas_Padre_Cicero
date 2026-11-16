@@ -25,6 +25,10 @@ public class InventoryMovement {
     @JoinColumn(name = "stock_id")
     private Stock stock;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "part_id", nullable = false)
+    private Part part;
+
     @NotNull
     @Enumerated(EnumType.STRING)
     private MovementType movementType;
@@ -55,6 +59,7 @@ public class InventoryMovement {
             Employee employee
     ) {
         this.stock = stock;
+        this.part = stock.getPart();
         stock.addMovement(this);
 
         this.movementType = movementType;

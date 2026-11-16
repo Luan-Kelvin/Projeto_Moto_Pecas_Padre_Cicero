@@ -13,8 +13,11 @@ public class InvetoryMovementService {
 
     // SALVAR MOVIMENTAÇÃO NO BANCO (USADO POR CLASSE)
     public void saveMovement(InventoryMovement movement){
-        if (movement != null){
-            inventoryMovementRepository.save(movement);
+        if (movement == null){
+            throw new IllegalArgumentException("A movimentação não pode ser nula.");
         }
+
+        movement.getPart().addMovement(movement);
+        inventoryMovementRepository.save(movement);
     }
 }

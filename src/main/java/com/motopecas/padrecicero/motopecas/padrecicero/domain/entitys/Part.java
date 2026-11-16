@@ -2,6 +2,7 @@ package com.motopecas.padrecicero.motopecas.padrecicero.domain.entitys;
 
 import com.motopecas.padrecicero.motopecas.padrecicero.domain.enuns.PartCategory;
 import com.motopecas.padrecicero.motopecas.padrecicero.exception.partExceptions.InvalidPartPriceException;
+import com.motopecas.padrecicero.motopecas.padrecicero.exception.stockExceptions.TransactionAlreadyAddedException;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
@@ -13,6 +14,8 @@ import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "parts")
@@ -30,7 +33,7 @@ public class Part {
     private String name;
 
     @Setter
-    private String description;
+    private String application;
 
     @Setter
     private String mark;
@@ -68,9 +71,13 @@ public class Part {
     @OneToOne(mappedBy = "part", fetch = FetchType.EAGER)
     private Stock stock;
 
+    @OneToMany(mappedBy = "part", fetch = FetchType.LAZY)
+    @OrderBy("transactionDate DESC, id DESC")
+    private List<InventoryMovement> movements = new ArrayList<>();
+
     public Part(
             String name,
-            String description,
+            String application,
             String mark,
             PartCategory category,
             String partCode,
@@ -79,7 +86,7 @@ public class Part {
             Integer minimumStock,
             Employee creator) {
         this.name = name;
-        this.description = description;
+        this.application = application;
         this.mark = mark;
         this.category = category;
         this.partCode = partCode;
@@ -113,5 +120,17 @@ public class Part {
         this.stock = stock;
     }
 
+    // ADICIONAR MOVIMENTAÇÃO DA PEÇA
+    public void addMovement(InventoryMovement movement){
+        if (movement == null){
+            throw new IllegalArgumentException("A movimentação não pode ser nula.");
+        }
+
+        if (movements.contains(movement)){
+            throw new TransactionAlreadyAddedException("ERRO! Movimentação já adicionada.");
+        }
+
+        movements.add(movement);
+    }
 
 }

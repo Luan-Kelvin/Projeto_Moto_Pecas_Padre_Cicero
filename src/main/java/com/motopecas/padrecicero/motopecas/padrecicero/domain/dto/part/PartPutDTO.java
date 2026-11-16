@@ -11,7 +11,7 @@ public record PartPutDTO(
 
         String name,
 
-        String description,
+        String application,
 
         String mark,
 

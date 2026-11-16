@@ -62,6 +62,10 @@ public class InventoryMovementRepositoryTest {
         entityManager.flush();
 
         assertThat(movementSaved.getId()).isNotNull();
+        entityManager.clear();
+        Part persistedPart = entityManager.find(Part.class, part.getId());
+        assertThat(persistedPart.getMovements().size()).isEqualTo(1);
+        assertThat(persistedPart.getMovements().get(0).getPart().getId()).isEqualTo(part.getId());
     }
 
     @Test

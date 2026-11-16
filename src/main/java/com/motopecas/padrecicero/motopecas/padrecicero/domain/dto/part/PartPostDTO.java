@@ -7,7 +7,7 @@ import java.math.BigDecimal;
 public record PartPostDTO(
         String name,
 
-        String description,
+        String application,
 
         String mark,
 

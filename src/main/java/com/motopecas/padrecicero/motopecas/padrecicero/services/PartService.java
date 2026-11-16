@@ -1,20 +1,29 @@
 package com.motopecas.padrecicero.motopecas.padrecicero.services;
 
 import com.motopecas.padrecicero.motopecas.padrecicero.domain.dto.part.PartGetDTO;
+import com.motopecas.padrecicero.motopecas.padrecicero.domain.dto.part.PartMovementDTO;
 import com.motopecas.padrecicero.motopecas.padrecicero.domain.dto.part.PartPostDTO;
 import com.motopecas.padrecicero.motopecas.padrecicero.domain.dto.part.PartPutDTO;
 import com.motopecas.padrecicero.motopecas.padrecicero.domain.entitys.Employee;
+import com.motopecas.padrecicero.motopecas.padrecicero.domain.entitys.InventoryMovement;
 import com.motopecas.padrecicero.motopecas.padrecicero.domain.entitys.Part;
 import com.motopecas.padrecicero.motopecas.padrecicero.exception.partExceptions.PartAlreadyExistsException;
 import com.motopecas.padrecicero.motopecas.padrecicero.exception.partExceptions.PartNotFoundException;
+import com.motopecas.padrecicero.motopecas.padrecicero.repository.InventoryMovementRepository;
 import com.motopecas.padrecicero.motopecas.padrecicero.repository.PartRepository;
+import jakarta.persistence.criteria.Predicate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Pattern;
 
 @Service
 public class PartService {
@@ -23,7 +32,14 @@ public class PartService {
     private PartRepository partRepository;
 
     @Autowired
+    private InventoryMovementRepository inventoryMovementRepository;
+
+    @Autowired
     private EmployeeService employeeService;
+
+    @Autowired
+    @Lazy
+    private StockService stockService;
 
     @Autowired
     private Conversor conversor;
@@ -41,7 +57,7 @@ public class PartService {
 
         Part part = new Part(
                 dto.name(),
-                dto.description(),
+                dto.application(),
                 dto.mark(),
                 dto.category(),
                 code,
@@ -84,10 +100,46 @@ public class PartService {
 
     // EXIBIR TODAS AS PEÇAS QUE CONTENHA O NOME DIGITADO
     @Transactional(readOnly = true)
-    public Page<PartGetDTO> searchPartByName(String name, Pageable pageable) {
-        Page<Part> parts = partRepository.findByNameContaining(name, pageable);
+    public Page<PartGetDTO> searchPartByName(String search, Pageable pageable) {
+        if (search == null || search.isBlank()) {
+            throw new IllegalArgumentException(
+                    "Informe o que deseja pesquisar."
+            );
+        }
 
-        return parts.map(conversor::converterPart);
+        String[] words = search.toLowerCase().trim().split("//s+");
+
+        Specification<Part> specificationExecutor = (root, query, cb) -> {
+            List<Predicate> predicate = new ArrayList<>();
+
+            for (String word : words){
+
+                String pattern = "%" + word + "%";
+
+                Predicate name = cb.like(
+                        cb.lower(root.get("name")),
+                        pattern
+                );
+
+                Predicate application = cb.like(
+                        cb.lower(root.get("application")),
+                        pattern
+                );
+
+                Predicate mark = cb.like(
+                        cb.lower(root.get("mark")),
+                        pattern
+                );
+
+                predicate.add(
+                        cb.or(name, application, mark)
+                );
+            }
+
+            return cb.and(predicate.toArray(new Predicate[0]));
+        };
+
+        return partRepository.findAll(specificationExecutor, pageable).map(conversor::converterPart);
     }
 
     // ATUALIZAR DADOS DA PEÇA
@@ -118,8 +170,8 @@ public class PartService {
              part.setMark(dto.mark());
          }
 
-         if (dto.description() != null && !dto.description().equals(part.getDescription())){
-            part.setDescription(dto.description());
+         if (dto.application() != null && !dto.application().equals(part.getApplication())){
+            part.setApplication(dto.application());
         }
 
         if (dto.category() != null && !dto.category().equals(part.getCategory())){
@@ -182,6 +234,27 @@ public class PartService {
         Page<Part> parts = partRepository.searchForItemsWithLowStock(pageable);
 
         return parts.map(conversor::converterPart);
+    }
+
+    // CONSULTAR QUANTIDADE EM ESTOQUE
+    @Transactional(readOnly = true)
+    public Integer checkQuantityPart(Long id){
+        Part part = partRepository.findById(id)
+                .orElseThrow(() -> new PartNotFoundException("ERRO! Peça não encontrada."));
+
+        return stockService.checkQuantity(part.getStock().getId());
+    }
+
+    // LISTAR HISTÓRICO DE MOVIMENTAÇÕES DA PEÇA
+    @Transactional(readOnly = true)
+    public Page<PartMovementDTO> listPartMovements(Long id, Pageable pageable){
+        partRepository.findById(id)
+                .orElseThrow(() -> new PartNotFoundException(
+                        String.format("ERRO! Peça com ID = %s não encontrada.", id)
+                ));
+
+        Page<InventoryMovement> movements = inventoryMovementRepository.findByPartId(id, pageable);
+        return movements.map(conversor::converterPartMovement);
     }
 
 

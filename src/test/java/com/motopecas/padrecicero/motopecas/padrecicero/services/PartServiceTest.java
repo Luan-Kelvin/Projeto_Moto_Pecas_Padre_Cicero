@@ -1,14 +1,19 @@
 package com.motopecas.padrecicero.motopecas.padrecicero.services;
 
 import com.motopecas.padrecicero.motopecas.padrecicero.domain.dto.part.PartGetDTO;
+import com.motopecas.padrecicero.motopecas.padrecicero.domain.dto.part.PartMovementDTO;
 import com.motopecas.padrecicero.motopecas.padrecicero.domain.dto.part.PartPostDTO;
 import com.motopecas.padrecicero.motopecas.padrecicero.domain.dto.part.PartPutDTO;
 import com.motopecas.padrecicero.motopecas.padrecicero.domain.entitys.Employee;
+import com.motopecas.padrecicero.motopecas.padrecicero.domain.entitys.InventoryMovement;
 import com.motopecas.padrecicero.motopecas.padrecicero.domain.entitys.Part;
+import com.motopecas.padrecicero.motopecas.padrecicero.domain.entitys.Stock;
 import com.motopecas.padrecicero.motopecas.padrecicero.domain.enuns.JobType;
+import com.motopecas.padrecicero.motopecas.padrecicero.domain.enuns.MovementType;
 import com.motopecas.padrecicero.motopecas.padrecicero.domain.enuns.PartCategory;
 import com.motopecas.padrecicero.motopecas.padrecicero.exception.partExceptions.PartAlreadyExistsException;
 import com.motopecas.padrecicero.motopecas.padrecicero.exception.partExceptions.PartNotFoundException;
+import com.motopecas.padrecicero.motopecas.padrecicero.repository.InventoryMovementRepository;
 import com.motopecas.padrecicero.motopecas.padrecicero.repository.PartRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -19,6 +24,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -38,6 +44,9 @@ public class PartServiceTest {
 
     @Mock
     private PartRepository partRepository;
+
+    @Mock
+    private InventoryMovementRepository inventoryMovementRepository;
 
     @Mock
     private EmployeeService employeeService;
@@ -135,6 +144,53 @@ public class PartServiceTest {
         verify(employeeService, never()).findById(anyLong());
         verify(partRepository, never()).save(any(Part.class));
         verify(conversor, never()).converterPart(any(Part.class));
+    }
+
+    @Test
+    @DisplayName("Deve listar as movimentações de uma peça")
+    void shouldListPartMovements(){
+        Employee employee = new Employee("Joaquim", "jojo@gmail.com", "12345", JobType.ADMIN);
+        Part part = new Part(
+                "Patim De Freio",
+                null,
+                "Cobreq",
+                PartCategory.FREIO,
+                "12345",
+                BigDecimal.valueOf(17.9),
+                BigDecimal.valueOf(33.9),
+                10,
+                employee
+        );
+        Stock stock = new Stock(part);
+        InventoryMovement movement = new InventoryMovement(
+                stock, MovementType.ENTRADA, 5, null, employee
+        );
+        part.addMovement(movement);
+        PartMovementDTO movementDTO = new PartMovementDTO(
+                null,
+                MovementType.ENTRADA,
+                5,
+                null,
+                null,
+                employee.getName(),
+                movement.getTransactionDate()
+        );
+
+        when(partRepository.findById(1L)).thenReturn(Optional.of(part));
+        when(conversor.converterPartMovement(movement)).thenReturn(movementDTO);
+
+        Pageable pageable = PageRequest.of(0, 1, Sort.by("transactionDate").descending());
+        when(inventoryMovementRepository.findByPartId(1L, pageable))
+                .thenReturn(new PageImpl<>(List.of(movement), pageable, 1));
+
+        Page<PartMovementDTO> result = partService.listPartMovements(1L, pageable);
+
+        assertThat(result.getTotalElements()).isEqualTo(1);
+        assertThat(result.getContent().getFirst()).isEqualTo(movementDTO);
+        assertThat(result.getNumber()).isEqualTo(0);
+        assertThat(result.getSize()).isEqualTo(1);
+        verify(inventoryMovementRepository).findByPartId(1L, pageable);
+        verify(conversor).converterPartMovement(movement);
     }
 
     @Test

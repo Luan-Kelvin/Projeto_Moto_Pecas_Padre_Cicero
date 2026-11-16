@@ -12,7 +12,7 @@ public record PartGetDTO(
 
         String name,
 
-        String description,
+        String application,
 
         String mark,
 

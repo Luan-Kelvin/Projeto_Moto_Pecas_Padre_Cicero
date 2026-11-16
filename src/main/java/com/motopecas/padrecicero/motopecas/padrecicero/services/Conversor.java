@@ -2,9 +2,11 @@ package com.motopecas.padrecicero.motopecas.padrecicero.services;
 
 import com.motopecas.padrecicero.motopecas.padrecicero.domain.dto.employee.EmployeeGetDTO;
 import com.motopecas.padrecicero.motopecas.padrecicero.domain.dto.part.PartGetDTO;
+import com.motopecas.padrecicero.motopecas.padrecicero.domain.dto.part.PartMovementDTO;
 import com.motopecas.padrecicero.motopecas.padrecicero.domain.dto.sale.ResponseCreateSaleDTO;
 import com.motopecas.padrecicero.motopecas.padrecicero.domain.dto.sale.ResponseItemForSaleDTO;
 import com.motopecas.padrecicero.motopecas.padrecicero.domain.entitys.Employee;
+import com.motopecas.padrecicero.motopecas.padrecicero.domain.entitys.InventoryMovement;
 import com.motopecas.padrecicero.motopecas.padrecicero.domain.entitys.ItemForSale;
 import com.motopecas.padrecicero.motopecas.padrecicero.domain.entitys.Part;
 import com.motopecas.padrecicero.motopecas.padrecicero.domain.entitys.Sale;
@@ -39,6 +41,18 @@ public class Conversor {
                 part.getCreationDate(),
                 part.getCreator().getId(),
                 part.getStock().getId()
+        );
+    }
+
+    public PartMovementDTO converterPartMovement(InventoryMovement movement){
+        return new PartMovementDTO(
+                movement.getId(),
+                movement.getMovementType(),
+                movement.getQuantity(),
+                movement.getReason(),
+                movement.getEmployee().getId(),
+                movement.getEmployee().getName(),
+                movement.getTransactionDate()
         );
     }
 

@@ -28,6 +28,7 @@ public record PartGetDTO(
 
         Long creatorId,
 
-        Long stockId
+        Integer quantity
+
 ) {
 }

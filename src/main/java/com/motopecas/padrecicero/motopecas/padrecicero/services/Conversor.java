@@ -32,7 +32,7 @@ public class Conversor {
                 part.getId(),
                 part.getPartCode(),
                 part.getName(),
-                part.getDescription(),
+                part.getApplication(),
                 part.getMark(),
                 part.getCategory(),
                 part.getCostPrice(),
@@ -40,7 +40,7 @@ public class Conversor {
                 part.getActive(),
                 part.getCreationDate(),
                 part.getCreator().getId(),
-                part.getStock().getId()
+                part.getStock().getCurrentQuantity()
         );
     }
 

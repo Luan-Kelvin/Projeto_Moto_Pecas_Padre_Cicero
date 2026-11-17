@@ -7,6 +7,7 @@ import com.motopecas.padrecicero.motopecas.padrecicero.domain.dto.part.PartPutDT
 import com.motopecas.padrecicero.motopecas.padrecicero.domain.entitys.Employee;
 import com.motopecas.padrecicero.motopecas.padrecicero.domain.entitys.InventoryMovement;
 import com.motopecas.padrecicero.motopecas.padrecicero.domain.entitys.Part;
+import com.motopecas.padrecicero.motopecas.padrecicero.domain.entitys.Stock;
 import com.motopecas.padrecicero.motopecas.padrecicero.exception.partExceptions.PartAlreadyExistsException;
 import com.motopecas.padrecicero.motopecas.padrecicero.exception.partExceptions.PartNotFoundException;
 import com.motopecas.padrecicero.motopecas.padrecicero.repository.InventoryMovementRepository;
@@ -23,7 +24,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Pattern;
 
 @Service
 public class PartService {
@@ -67,8 +67,12 @@ public class PartService {
                 employee
         );
 
-        partRepository.save(part);
+        Stock stock = new Stock(part);
+        stock.addNewQuantityParts(dto.quantity());
+
         employee.addPart(part);
+        partRepository.save(part);
+        stockService.saveStock(stock);
 
         return conversor.converterPart(part);
     }
@@ -107,7 +111,7 @@ public class PartService {
             );
         }
 
-        String[] words = search.toLowerCase().trim().split("//s+");
+        String[] words = search.toLowerCase().trim().split("\\s+");
 
         Specification<Part> specificationExecutor = (root, query, cb) -> {
             List<Predicate> predicate = new ArrayList<>();

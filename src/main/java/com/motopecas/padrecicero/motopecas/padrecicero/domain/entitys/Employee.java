@@ -103,7 +103,7 @@ public class Employee implements UserDetails {
     // ADICIONAR NOVA PEÇA REGISTRADA/CRIADA
     public void addPart(Part part){
         if (registredItems.contains(part)){
-            throw new ItemAlreadyRegistredException("ERRO! Peça já foi adicionado na lista de criação d funcionário.");
+            throw new ItemAlreadyRegistredException("ERRO! Peça já foi adicionado na lista de criação de funcionário.");
         }
 
         registredItems.add(part);

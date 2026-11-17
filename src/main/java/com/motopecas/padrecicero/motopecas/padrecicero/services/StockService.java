@@ -121,7 +121,11 @@ public class StockService {
         }else {
             return false;
         }
+    }
 
+    // SALVAR STOCK NO BANCO
+    public void saveStock(Stock stock){
+        stockRepository.save(stock);
     }
 
 

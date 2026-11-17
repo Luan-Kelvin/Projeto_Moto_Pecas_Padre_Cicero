@@ -19,6 +19,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.InOrder;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -52,6 +53,9 @@ public class PartServiceTest {
     private EmployeeService employeeService;
 
     @Mock
+    private StockService stockService;
+
+    @Mock
     private Conversor conversor;
 
     @InjectMocks
@@ -69,7 +73,8 @@ public class PartServiceTest {
                 PartCategory.FREIO,
                 BigDecimal.valueOf(17.9 ),
                 BigDecimal.valueOf(33.9),
-                10
+                10,
+                25
         );
 
         PartGetDTO partGetDto = new PartGetDTO(
@@ -84,20 +89,24 @@ public class PartServiceTest {
                 true,
                 LocalDate.now(),
                 1L,
-                1L
+                25
         );
 
         when(partRepository.existsByNameAndMark(postDTO.name(), postDTO.mark())).thenReturn(false);
+        when(partRepository.generatePartCode()).thenReturn(12345L);
         when(employeeService.findById(any(Long.class))).thenReturn(employee);
         when(conversor.converterPart(any(Part.class))).thenReturn(partGetDto);
 
         PartGetDTO partReturn = partService.registerPart(postDTO, 1L);
 
         ArgumentCaptor<Part> captor = ArgumentCaptor.forClass(Part.class);
-
-        verify(partRepository).save(captor.capture());
+        ArgumentCaptor<Stock> stockCaptor = ArgumentCaptor.forClass(Stock.class);
+        InOrder saveOrder = inOrder(partRepository, stockService);
+        saveOrder.verify(partRepository).save(captor.capture());
+        saveOrder.verify(stockService).saveStock(stockCaptor.capture());
 
         Part partSaved = captor.getValue();
+        Stock stockSaved = stockCaptor.getValue();
 
         assertThat(partSaved.getName()).isEqualTo(postDTO.name());
         assertThat(partSaved.getMark()).isEqualTo(postDTO.mark());
@@ -107,6 +116,8 @@ public class PartServiceTest {
         assertThat(partSaved.getMinimumStock()).isEqualTo(postDTO.minimumStock());
         assertThat(partSaved.getCreator()).isSameAs(employee);
         assertThat(partSaved.getPartCode()).isNotBlank();
+        assertThat(stockSaved.getPart()).isSameAs(partSaved);
+        assertThat(stockSaved.getCurrentQuantity()).isEqualTo(postDTO.quantity());
 
         assertThat(partReturn.id()).isEqualTo(1L);
         assertThat(partReturn.name()).isEqualTo(postDTO.name());
@@ -116,6 +127,7 @@ public class PartServiceTest {
         assertThat(partReturn.category()).isEqualTo(partSaved.getCategory());
         assertThat(partReturn.costPrice()).isEqualTo(partSaved.getCostPrice());
         assertThat(partReturn.sellingPrice()).isEqualTo(partSaved.getSellingPrice());
+        assertThat(partReturn.quantity()).isEqualTo(postDTO.quantity());
 
         verify(partRepository).existsByNameAndMark(postDTO.name(), postDTO.mark());
         verify(employeeService).findById(any(Long.class));
@@ -132,7 +144,8 @@ public class PartServiceTest {
                 PartCategory.FREIO,
                 BigDecimal.valueOf(17.9 ),
                 BigDecimal.valueOf(33.9),
-                10
+                10,
+                25
         );
 
         when(partRepository.existsByNameAndMark(postDTO.name(), postDTO.mark())).thenReturn(true);
@@ -227,7 +240,7 @@ public class PartServiceTest {
                 true,
                 LocalDate.now(),
                 1L,
-                1L
+                1
         );
 
         when(partRepository.findAll(pageable)).thenReturn(pagePart);
@@ -276,7 +289,7 @@ public class PartServiceTest {
                 true,
                 LocalDate.now(),
                 1L,
-                1L
+                1
         );
 
         when(partRepository.findById(1L)).thenReturn(Optional.of(part));
@@ -330,10 +343,11 @@ public class PartServiceTest {
                 true,
                 LocalDate.now(),
                 1L,
-                1L
+                1
         );
 
-        when(partRepository.findByNameContaining(name, pageable)).thenReturn(pagePart);
+        when(partRepository.findAll(any(org.springframework.data.jpa.domain.Specification.class), eq(pageable)))
+                .thenReturn(pagePart);
         when(conversor.converterPart(any(Part.class))).thenReturn(partGetDto);
 
         Page<PartGetDTO> pageReturn = partService.searchPartByName(name, pageable);
@@ -343,7 +357,7 @@ public class PartServiceTest {
         assertThat(pageReturn.getContent().getFirst().name()).isEqualTo(partGetDto.name());
         assertThat(pageReturn.getContent().getFirst().partCode()).isEqualTo(partGetDto.partCode());
 
-        verify(partRepository).findByNameContaining(name, pageable);
+        verify(partRepository).findAll(any(org.springframework.data.jpa.domain.Specification.class), eq(pageable));
         verify(conversor).converterPart(any(Part.class));
     }
 
@@ -397,7 +411,7 @@ public class PartServiceTest {
                 true,
                 LocalDate.now(),
                 1L,
-                1L
+                1
         );
 
         when(partRepository.findById(partPutDTO.id())).thenReturn(Optional.of(part));
@@ -710,7 +724,7 @@ public class PartServiceTest {
                 true,
                 LocalDate.now(),
                 1L,
-                1L
+                1
         );
 
         when(partRepository.searchForItemsWithLowStock(pageable)).thenReturn(pagePart);

@@ -133,4 +133,20 @@ public class Part {
         movements.add(movement);
     }
 
+    // DESATIVAR PEÇA
+    public void deactivate(){
+        if (!this.active){
+            throw new IllegalAccessError("ERRO! Peça já desativada.");
+        }
+        this.active = false;
+    }
+
+    // ATIVAR PEÇA
+    public void activate(){
+        if (this.active){
+            throw new IllegalAccessError("ERRO! Peça já ativada.");
+        }
+        this.active = true;
+    }
+
 }

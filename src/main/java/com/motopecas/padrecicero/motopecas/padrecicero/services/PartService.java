@@ -261,6 +261,24 @@ public class PartService {
         return movements.map(conversor::converterPartMovement);
     }
 
+    // DESATIVAR PEÇA
+    @Transactional
+    public void deactivatePart(Long id){
+        Part part = partRepository.findById(id)
+                .orElseThrow(() -> new PartNotFoundException("ERRO! Peça não encontrada."));
+
+        part.deactivate();
+    }
+
+    // ATIVAR PEÇA
+    @Transactional
+    public void activatePart(Long id){
+        Part part = partRepository.findById(id)
+                .orElseThrow(() -> new PartNotFoundException("ERRO! Peça não encontrada."));
+
+        part.activate();
+    }
+
 
     private String generatePartCode() {
         partRepository.incrementPartCode();

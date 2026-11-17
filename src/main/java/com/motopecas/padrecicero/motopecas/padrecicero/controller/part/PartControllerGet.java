@@ -17,7 +17,7 @@ public class PartControllerGet {
     private PartService partService;
 
     // LISTAR TODAS AS PEÇAS CADASTRADAS
-    @GetMapping
+    @GetMapping("/list")
     public ResponseEntity<Page<PartGetDTO>> listParts(Pageable pageable){
         return ResponseEntity.ok().body(partService.listParts(pageable));
     }

@@ -31,17 +31,38 @@ public class ItemForSale {
     private BigDecimal subtotal;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "sale_id")
+    @JoinColumn(name = "sale_id", nullable = false)
     @NotNull
     private Sale sale;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "part_id")
+    @JoinColumn(name = "part_id", nullable = false)
     @NotNull
     private Part part;
 
 
     public ItemForSale(Integer quantity, BigDecimal unitPrice, Part part, Sale sale) {
+
+        if (quantity == null || quantity <= 0) {
+            throw new IllegalArgumentException(
+                    "Quantidade inválida."
+            );
+        }
+
+        if (unitPrice == null ||
+                unitPrice.compareTo(BigDecimal.ZERO) <= 0) {
+
+            throw new IllegalArgumentException(
+                    "Preço unitário inválido."
+            );
+        }
+
+        if (part == null || sale == null) {
+            throw new IllegalArgumentException(
+                    "Peça e venda são obrigatórias."
+            );
+        }
+
         this.quantity = quantity;
         this.unitPrice = unitPrice;
         this.part = part;

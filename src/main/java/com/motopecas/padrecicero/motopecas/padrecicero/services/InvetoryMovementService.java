@@ -17,7 +17,6 @@ public class InvetoryMovementService {
             throw new IllegalArgumentException("A movimentação não pode ser nula.");
         }
 
-        movement.getPart().addMovement(movement);
         inventoryMovementRepository.save(movement);
     }
 }

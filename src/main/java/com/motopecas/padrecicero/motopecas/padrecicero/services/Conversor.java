@@ -66,7 +66,6 @@ public class Conversor {
                 sale.getEmployee().getId(),
                 sale.getStatusSale(),
                 sale.getTotalValue(),
-                sale.getEmployee().getId(),
                 sale.getEmployee().getName()
         );
     }

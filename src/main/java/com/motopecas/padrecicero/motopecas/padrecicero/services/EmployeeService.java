@@ -11,12 +11,10 @@ import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Service
@@ -33,9 +31,7 @@ public class EmployeeService {
     // CADASTRAR NOVO FUNCIONÁRIO
     @Transactional
     public EmployeeGetDTO registerEmployee(EmployeePostDTO employeDto) throws MessagingException {
-        Optional<Employee> employeeRep = employeeRepository.findByEmail(employeDto.email());
-
-        if (employeeRep.isPresent()){
+        if (employeeRepository.existsByEmail(employeDto.email())){
             throw new EmployeeAlreadyExistsException(
                     String.format("ERRO! Funcionário com email %s, já está cadastrado.", employeDto.email())
             );

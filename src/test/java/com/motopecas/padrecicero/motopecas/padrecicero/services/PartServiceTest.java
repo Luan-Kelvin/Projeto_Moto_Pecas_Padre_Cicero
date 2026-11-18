@@ -176,12 +176,14 @@ public class PartServiceTest {
         );
         Stock stock = new Stock(part);
         InventoryMovement movement = new InventoryMovement(
-                stock, MovementType.ENTRADA, 5, null, employee
+                stock, MovementType.ENTRADA, 0, 5, null, employee
         );
         part.addMovement(movement);
         PartMovementDTO movementDTO = new PartMovementDTO(
                 null,
                 MovementType.ENTRADA,
+                5,
+                0,
                 5,
                 null,
                 null,

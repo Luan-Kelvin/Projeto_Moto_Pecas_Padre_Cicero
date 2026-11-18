@@ -48,11 +48,13 @@ public class StockService {
         Employee employee = employeeService.findById(idEmployee);
 
         Stock stock = part.getStock();
+        Integer previousQuantity = stock.getCurrentQuantity();
 
         stock.addNewQuantityParts(inputData.quantity());
+        Integer newQuantity = stock.getCurrentQuantity();
 
         InventoryMovement movement = new InventoryMovement(
-                stock, MovementType.ENTRADA , inputData.quantity(), null, employee
+                stock, MovementType.ENTRADA, previousQuantity, newQuantity, null, employee
         );
 
         movementService.saveMovement(movement);
@@ -69,11 +71,13 @@ public class StockService {
         Employee employee = employeeService.findById(idEmployee);
 
         Stock stock = part.getStock();
+        Integer previousQuantity = stock.getCurrentQuantity();
 
         stock.removeQuantityOfItem(dto.quantity());
+        Integer newQuantity = stock.getCurrentQuantity();
 
         InventoryMovement movement = new InventoryMovement(
-                stock, MovementType.SAIDA, dto.quantity(), null, employee
+                stock, MovementType.SAIDA, previousQuantity, newQuantity, null, employee
         );
 
         movementService.saveMovement(movement);
@@ -89,12 +93,13 @@ public class StockService {
         Employee employee = employeeService.findById(idEmployee);
 
         Stock stock = part.getStock();
+        Integer previousQuantity = stock.getCurrentQuantity();
 
         stock.setCurrentQuantity(dto.currentQuantity());
         stock.setLastUpdate(LocalDateTime.now());
 
         InventoryMovement movement = new InventoryMovement(
-                stock, MovementType.AJUSTE, dto.currentQuantity(), dto.reason(), employee
+                stock, MovementType.AJUSTE, previousQuantity, dto.currentQuantity(), dto.reason(), employee
         );
 
         movementService.saveMovement(movement);
@@ -102,11 +107,13 @@ public class StockService {
         return new MovementAdjustmnetResponseDTO(
                 InputStatus.SUCCESS,
                 MovementType.AJUSTE,
-                dto.currentQuantity(),
+                movement.getQuantity(),
                 dto.reason(),
                 stock.getId(),
                 part.getName(),
                 stock.getCurrentQuantity(),
+                previousQuantity,
+                dto.currentQuantity(),
                 movement.getId()
         );
 

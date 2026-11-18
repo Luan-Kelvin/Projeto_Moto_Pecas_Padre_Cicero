@@ -11,6 +11,8 @@ public record MovementAdjustmnetResponseDTO(
         Long idStock,
         String part,
         Integer currentQuantity,
+        Integer previousQuantity,
+        Integer newQuantity,
         Long idMovement
 ) {
 }

@@ -8,6 +8,8 @@ public record PartMovementDTO(
         Long id,
         MovementType movementType,
         Integer quantity,
+        Integer previousQuantity,
+        Integer newQuantity,
         String reason,
         Long employeeId,
         String employeeName,

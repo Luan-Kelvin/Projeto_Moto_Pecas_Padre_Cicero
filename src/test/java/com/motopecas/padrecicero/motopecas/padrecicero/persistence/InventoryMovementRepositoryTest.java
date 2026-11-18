@@ -53,10 +53,12 @@ public class InventoryMovementRepositoryTest {
 
         Stock stock = new Stock(part);
         entityManager.persistAndFlush(stock);
+        stock.setCurrentQuantity(20);
 
         InventoryMovement inventoryMovement = new InventoryMovement(
-                stock, MovementType.SAIDA, 3, "Envio para garantia", employee
+                stock, MovementType.AJUSTE, 20, 15, "Divergência na contagem física", employee
         );
+        stock.setCurrentQuantity(15);
 
         InventoryMovement movementSaved = inventoryMovementRepository.save(inventoryMovement);
         entityManager.flush();
@@ -65,7 +67,11 @@ public class InventoryMovementRepositoryTest {
         entityManager.clear();
         Part persistedPart = entityManager.find(Part.class, part.getId());
         assertThat(persistedPart.getMovements().size()).isEqualTo(1);
-        assertThat(persistedPart.getMovements().get(0).getPart().getId()).isEqualTo(part.getId());
+        InventoryMovement persistedMovement = persistedPart.getMovements().get(0);
+        assertThat(persistedMovement.getPart().getId()).isEqualTo(part.getId());
+        assertThat(persistedMovement.getQuantity()).isEqualTo(-5);
+        assertThat(persistedMovement.getPreviousQuantity()).isEqualTo(20);
+        assertThat(persistedMovement.getNewQuantity()).isEqualTo(15);
     }
 
     @Test
@@ -95,7 +101,7 @@ public class InventoryMovementRepositoryTest {
         entityManager.persistAndFlush(stock);
 
         InventoryMovement inventoryMovement = new InventoryMovement(
-                stock, MovementType.SAIDA, 3, "Envio para garantia", employee
+                stock, MovementType.SAIDA, 10, 7, "Envio para garantia", employee
         );
 
         InventoryMovement movementSaved = inventoryMovementRepository.save(inventoryMovement);
@@ -103,9 +109,13 @@ public class InventoryMovementRepositoryTest {
 
         Long id = inventoryMovement.getId();
 
+        entityManager.clear();
         Optional<InventoryMovement> result = inventoryMovementRepository.findById(id);
 
         assertThat(result).isPresent();
+        assertThat(result.get().getQuantity()).isEqualTo(3);
+        assertThat(result.get().getPreviousQuantity()).isEqualTo(10);
+        assertThat(result.get().getNewQuantity()).isEqualTo(7);
     }
 
     @Test
@@ -135,7 +145,7 @@ public class InventoryMovementRepositoryTest {
         entityManager.persistAndFlush(stock);
 
         InventoryMovement inventoryMovement = new InventoryMovement(
-                stock, MovementType.SAIDA, 3, "Envio para garantia", employee
+                stock, MovementType.SAIDA, 10, 7, "Envio para garantia", employee
         );
 
         inventoryMovementRepository.save(inventoryMovement);

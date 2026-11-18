@@ -85,6 +85,8 @@ class StockServiceTest {
         assertThat(movement.getStock()).isSameAs(stock);
         assertThat(movement.getMovementType()).isEqualTo(MovementType.ENTRADA);
         assertThat(movement.getQuantity()).isEqualTo(5);
+        assertThat(movement.getPreviousQuantity()).isEqualTo(10);
+        assertThat(movement.getNewQuantity()).isEqualTo(15);
         assertThat(movement.getReason()).isNull();
         assertThat(movement.getEmployee()).isSameAs(employee);
 
@@ -127,6 +129,8 @@ class StockServiceTest {
         assertThat(movement.getStock()).isSameAs(stock);
         assertThat(movement.getMovementType()).isEqualTo(MovementType.SAIDA);
         assertThat(movement.getQuantity()).isEqualTo(4);
+        assertThat(movement.getPreviousQuantity()).isEqualTo(10);
+        assertThat(movement.getNewQuantity()).isEqualTo(6);
         assertThat(movement.getReason()).isNull();
         assertThat(movement.getEmployee()).isSameAs(employee);
         verify(partService).findById(partId);
@@ -168,9 +172,11 @@ class StockServiceTest {
         Long partId = 1L;
         Long employeeId = 2L;
         Employee employee = createEmployee();
-        Stock stock = createStock(4, 3L);
+        Stock stock = createStock(20, 3L);
         Part part = createPart(stock);
-        InventoryAdjustamentDataDTO input = new InventoryAdjustamentDataDTO(partId, 9, "Inventário físico");
+        InventoryAdjustamentDataDTO input = new InventoryAdjustamentDataDTO(
+                partId, 15, "Divergência na contagem física"
+        );
 
         when(partService.findById(partId)).thenReturn(part);
         when(employeeService.findById(employeeId)).thenReturn(employee);
@@ -186,23 +192,54 @@ class StockServiceTest {
         verify(invetoryMovementService).saveMovement(movementCaptor.capture());
         InventoryMovement movement = movementCaptor.getValue();
 
-        assertThat(stock.getCurrentQuantity()).isEqualTo(9);
+        assertThat(stock.getCurrentQuantity()).isEqualTo(15);
         assertThat(stock.getLastUpdate()).isNotNull();
         assertThat(movement.getStock()).isSameAs(stock);
         assertThat(movement.getMovementType()).isEqualTo(MovementType.AJUSTE);
-        assertThat(movement.getQuantity()).isEqualTo(9);
-        assertThat(movement.getReason()).isEqualTo("Inventário físico");
+        assertThat(movement.getQuantity()).isEqualTo(-5);
+        assertThat(movement.getPreviousQuantity()).isEqualTo(20);
+        assertThat(movement.getNewQuantity()).isEqualTo(15);
+        assertThat(movement.getReason()).isEqualTo("Divergência na contagem física");
         assertThat(movement.getEmployee()).isSameAs(employee);
         assertThat(response.status()).isEqualTo(InputStatus.SUCCESS);
         assertThat(response.type()).isEqualTo(MovementType.AJUSTE);
-        assertThat(response.quantity()).isEqualTo(9);
-        assertThat(response.reason()).isEqualTo("Inventário físico");
+        assertThat(response.quantity()).isEqualTo(-5);
+        assertThat(response.reason()).isEqualTo("Divergência na contagem física");
         assertThat(response.idStock()).isEqualTo(3L);
         assertThat(response.part()).isEqualTo("Pastilha de freio");
-        assertThat(response.currentQuantity()).isEqualTo(9);
+        assertThat(response.currentQuantity()).isEqualTo(15);
+        assertThat(response.previousQuantity()).isEqualTo(20);
+        assertThat(response.newQuantity()).isEqualTo(15);
         assertThat(response.idMovement()).isEqualTo(7L);
         verify(partService).findById(partId);
         verify(employeeService).findById(employeeId);
+    }
+
+    @Test
+    @DisplayName("Deve registrar diferença positiva ao ajustar o estoque para cima")
+    void shouldRecordPositiveDifferenceWhenIncreasingStockAdjustment() {
+        Long partId = 1L;
+        Long employeeId = 2L;
+        Employee employee = createEmployee();
+        Stock stock = createStock(10, 3L);
+        Part part = createPart(stock);
+        InventoryAdjustamentDataDTO input = new InventoryAdjustamentDataDTO(partId, 15, "Contagem física");
+
+        when(partService.findById(partId)).thenReturn(part);
+        when(employeeService.findById(employeeId)).thenReturn(employee);
+
+        stockService.performAdjustament(input, employeeId);
+
+        ArgumentCaptor<InventoryMovement> movementCaptor = ArgumentCaptor.forClass(InventoryMovement.class);
+        verify(invetoryMovementService).saveMovement(movementCaptor.capture());
+        InventoryMovement movement = movementCaptor.getValue();
+
+        assertThat(stock.getCurrentQuantity()).isEqualTo(15);
+        assertThat(movement.getMovementType()).isEqualTo(MovementType.AJUSTE);
+        assertThat(movement.getQuantity()).isEqualTo(5);
+        assertThat(movement.getPreviousQuantity()).isEqualTo(10);
+        assertThat(movement.getNewQuantity()).isEqualTo(15);
+        assertThat(movement.getReason()).isEqualTo("Contagem física");
     }
 
     @Test

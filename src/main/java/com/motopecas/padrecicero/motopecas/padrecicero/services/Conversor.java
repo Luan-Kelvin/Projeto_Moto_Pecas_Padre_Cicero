@@ -49,6 +49,8 @@ public class Conversor {
                 movement.getId(),
                 movement.getMovementType(),
                 movement.getQuantity(),
+                movement.getPreviousQuantity(),
+                movement.getNewQuantity(),
                 movement.getReason(),
                 movement.getEmployee().getId(),
                 movement.getEmployee().getName(),

@@ -3,7 +3,6 @@ package com.motopecas.padrecicero.motopecas.padrecicero.domain.entitys;
 import com.motopecas.padrecicero.motopecas.padrecicero.domain.enuns.MovementType;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -21,7 +20,7 @@ public class InventoryMovement {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "stock_id")
     private Stock stock;
 
@@ -34,17 +33,20 @@ public class InventoryMovement {
     private MovementType movementType;
 
     @NotNull
-    @Positive
     private Integer quantity;
+
+    private Integer previousQuantity;
+
+    private Integer newQuantity;
 
     private String reason;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "employee_id")
     @NotNull
     private Employee employee;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "sale_id")
     private Sale sale;
 
@@ -54,7 +56,8 @@ public class InventoryMovement {
     public InventoryMovement(
             Stock stock,
             MovementType movementType,
-            Integer quantity,
+            Integer previousQuantity,
+            Integer newQuantity,
             String reason,
             Employee employee
     ) {
@@ -63,7 +66,11 @@ public class InventoryMovement {
         stock.addMovement(this);
 
         this.movementType = movementType;
-        this.quantity = quantity;
+        this.previousQuantity = previousQuantity;
+        this.newQuantity = newQuantity;
+        this.quantity = movementType == MovementType.AJUSTE
+                ? newQuantity - previousQuantity
+                : Math.abs(newQuantity - previousQuantity);
         this.reason = reason;
 
         this.employee = employee;

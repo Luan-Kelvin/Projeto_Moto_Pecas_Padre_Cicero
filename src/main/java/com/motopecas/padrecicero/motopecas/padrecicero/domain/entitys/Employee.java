@@ -187,7 +187,13 @@ public class Employee implements UserDetails {
     }
 
   public void changeEmail(String newEmail){
-        this.email = newEmail;
+      if (newEmail == null || newEmail.isBlank()) {
+          throw new IllegalArgumentException(
+                  "O e-mail não pode ser vazio."
+          );
+      }
+
+      this.email = newEmail;
 
       this.verified = false;
       this.verificationToken = UUID.randomUUID().toString();

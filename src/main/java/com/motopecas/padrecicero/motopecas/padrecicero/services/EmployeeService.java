@@ -155,12 +155,13 @@ public class EmployeeService {
     // MARCAR FUNCIONÁRIO COMO VERIFICADO
     @Transactional
     public void verifyEmail(String token){
-        Employee employee = employeeRepository.findByVerificationToken(token)
-                .orElseThrow(() -> new EmployeeNoFoundException("ERRO! Não foi encontrado nenhum funcionário com token informado."));
-
-        if (employee.getVerificationTokenExpiration().isBefore(LocalDateTime.now())) {
-            throw new EmployeeInactiveException("ERRO! Token expirado.");
-        }
+        Employee employee = employeeRepository
+                .findByVerificationToken(token)
+                .orElseThrow(() ->
+                        new EmployeeNoFoundException(
+                                "Funcionário não encontrado para o token informado."
+                        )
+                );
 
         employee.toCheck();
     }

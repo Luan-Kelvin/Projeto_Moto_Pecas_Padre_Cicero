@@ -133,13 +133,14 @@ public class SaleService {
 
         Payment payment = new Payment(sale.getTotalValue(), dto.paymentMethod(), dto.externalReference(), sale);
 
-        payment.setPaymentStatus(PaymentStatus.APROVADO);
         sale.addPayment(payment);
-        sale.setStatusSale(StatusSale.CONCLUIDA);
         saleRepository.save(sale);
 
-        return String.format("Venda %s finalizada com sucesso! Valor total R$ %.2f", sale.getSaleCode(), sale.getTotalValue());
-    }
+        return String.format(
+                "Pagamento solicitado! Venda %s. Valor: R$ %.2f. Status: PENDENTE.",
+                sale.getSaleCode(),
+                sale.getTotalValue()
+        );    }
 
     // CANCELAR VENDA
     @Transactional
@@ -157,13 +158,9 @@ public class SaleService {
             i.getPart().getStock().addNewQuantityParts(i.getQuantity());
         }
 
-
-        payment.setPaymentStatus(PaymentStatus.ESTORNADO);
-        sale.setStatusSale(StatusSale.CANCELADA);
+        sale.cancel();
 
         return String.format("Venda %s CANCELADA com sucesso! Valor total R$ %.2f", sale.getSaleCode(), sale.getTotalValue());
-
-
     }
 
     // LISTAR TODAS AS VENDAS DA LOJA
@@ -181,6 +178,28 @@ public class SaleService {
     // CONSULTAR VENDAS PRÓRPIAS
     public Page<ResponseCreateSaleDTO> listMySales(Long idEmployee, Pageable pageable) {
         return saleRepository.findByEmployeeId(idEmployee, pageable).map(conversor::converterResponseCreateSale);
+    }
+
+    @Transactional
+    public String confirmPayment(Long idSale) {
+        Sale sale = saleRepository.findById(idSale)
+                .orElseThrow(() -> new SaleNotFoundException("Venda não encontrada."));
+
+        if (sale.getStatusSale() != StatusSale.ABERTA) {
+            throw new IllegalStateException("Essa venda não está aberta.");
+        }
+
+        Payment payment = sale.getPaymentInfo();
+
+        if (payment == null) {
+            throw new IllegalStateException("Venda não possui pagamento solicitado.");
+        }
+
+        payment.approve();
+
+        sale.complete();
+
+        return "Pagamento confirmado com sucesso!";
     }
 
     // GERAR CÓDIGO DE VENDA

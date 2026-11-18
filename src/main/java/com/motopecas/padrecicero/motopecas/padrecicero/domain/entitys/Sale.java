@@ -1,5 +1,6 @@
 package com.motopecas.padrecicero.motopecas.padrecicero.domain.entitys;
 
+import com.motopecas.padrecicero.motopecas.padrecicero.domain.enuns.PaymentStatus;
 import com.motopecas.padrecicero.motopecas.padrecicero.domain.enuns.StatusSale;
 import com.motopecas.padrecicero.motopecas.padrecicero.exception.salesException.ListOfSalesItemsIsEmptyException;
 import jakarta.persistence.*;
@@ -38,7 +39,6 @@ public class Sale {
 
     @Enumerated(EnumType.STRING)
     @NotNull
-    @Setter
     private StatusSale statusSale;
 
     @OneToMany(mappedBy = "sale", fetch = FetchType.LAZY)
@@ -101,5 +101,44 @@ public class Sale {
         }
 
         this.totalValue = total;
+    }
+
+    public void complete() {
+
+        if (this.statusSale == StatusSale.CANCELADA) {
+            throw new IllegalStateException(
+                    "Não é possível concluir uma venda cancelada."
+            );
+        }
+
+        if (this.paymentInfo == null ||
+                this.paymentInfo.getPaymentStatus() != PaymentStatus.APROVADO) {
+            throw new IllegalStateException("Pagamento ainda não aprovado.");
+        }
+
+        if (this.itemForSales.isEmpty()) {
+            throw new IllegalStateException(
+                    "Não é possível concluir uma venda sem itens."
+            );
+        }
+
+        this.statusSale = StatusSale.CONCLUIDA;
+    }
+
+    public void cancel() {
+
+        if (this.statusSale == StatusSale.CANCELADA) {
+            throw new IllegalStateException(
+                    "Não é possível cancelar uma venda cancelada."
+            );
+        }
+
+        if (this.itemForSales.isEmpty()) {
+            throw new IllegalStateException(
+                    "Não é possível cancelar uma venda sem itens."
+            );
+        }
+
+        this.statusSale = StatusSale.CANCELADA;
     }
 }

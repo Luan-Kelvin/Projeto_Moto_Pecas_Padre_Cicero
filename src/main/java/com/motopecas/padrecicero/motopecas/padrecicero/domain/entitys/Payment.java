@@ -34,7 +34,6 @@ public class Payment {
 
     @NotNull
     @Enumerated(EnumType.STRING)
-    @Setter
     private PaymentStatus paymentStatus;
 
     @NotNull
@@ -53,5 +52,38 @@ public class Payment {
         this.sale = sale;
         this.paymentDate = LocalDateTime.now();
         this.paymentStatus = PaymentStatus.PENDENTE;
+    }
+
+    // APROVAR PAGAMENTO
+    public void approve() {
+        if (this.paymentStatus != PaymentStatus.PENDENTE) {
+            throw new IllegalStateException(
+                    "Somente pagamentos pendentes podem ser aprovados."
+            );
+        }
+
+        this.paymentStatus = PaymentStatus.APROVADO;
+    }
+
+    // REJEITAR PAGAMENTO
+    public void reject() {
+        if (this.paymentStatus != PaymentStatus.PENDENTE) {
+            throw new IllegalStateException(
+                    "Somente pagamentos pendentes podem ser recusados."
+            );
+        }
+
+        this.paymentStatus = PaymentStatus.RECUSADO;
+    }
+
+    // ESTORNAR PAGAMENTO
+    public void refund() {
+        if (this.paymentStatus != PaymentStatus.APROVADO) {
+            throw new IllegalStateException(
+                    "Somente pagamentos aprovados podem ser estornados."
+            );
+        }
+
+        this.paymentStatus = PaymentStatus.ESTORNADO;
     }
 }

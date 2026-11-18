@@ -7,6 +7,7 @@ import com.motopecas.padrecicero.motopecas.padrecicero.domain.dto.sale.SaleConcl
 import com.motopecas.padrecicero.motopecas.padrecicero.domain.entitys.Employee;
 import com.motopecas.padrecicero.motopecas.padrecicero.services.SaleService;
 import jakarta.validation.Valid;
+import jakarta.websocket.server.PathParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -48,5 +49,11 @@ public class SaleControllerPost {
         return ResponseEntity.ok().body(saleService.cancelSale(id));
     }
 
+    // CONFIRMAR PAGAMENTO
+    @PostMapping("/{id}/confirm-payment")
+    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE', 'CAIXA')")
+    public ResponseEntity<String> confirmPayment(@PathVariable("id") Long id){
+        return ResponseEntity.ok().body(saleService.confirmPayment(id));
+    }
 
 }

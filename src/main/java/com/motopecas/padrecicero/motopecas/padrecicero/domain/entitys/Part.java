@@ -66,7 +66,7 @@ public class Part {
     @NotNull
     private Employee creator;
 
-    @OneToOne(mappedBy = "part", fetch = FetchType.EAGER)
+    @OneToOne(mappedBy = "part", fetch = FetchType.LAZY)
     private Stock stock;
 
     @OneToMany(mappedBy = "part", fetch = FetchType.LAZY)
@@ -134,7 +134,7 @@ public class Part {
     // DESATIVAR PEÇA
     public void deactivate(){
         if (!this.active){
-            throw new IllegalAccessError("ERRO! Peça já desativada.");
+            throw new IllegalStateException("ERRO! Peça já desativada.");
         }
         this.active = false;
     }
@@ -142,7 +142,7 @@ public class Part {
     // ATIVAR PEÇA
     public void activate(){
         if (this.active){
-            throw new IllegalAccessError("ERRO! Peça já ativada.");
+            throw new IllegalStateException("ERRO! Peça já ativada.");
         }
         this.active = true;
     }

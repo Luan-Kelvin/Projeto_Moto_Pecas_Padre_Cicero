@@ -1,6 +1,8 @@
 package com.motopecas.padrecicero.motopecas.padrecicero.repository;
 
 import com.motopecas.padrecicero.motopecas.padrecicero.domain.entitys.Sale;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -21,4 +23,6 @@ public interface SaleRepository extends JpaRepository<Sale, Long> {
 
     @Query(value = "SELECT LAST_INSERT_ID()", nativeQuery = true)
     Long generateSaleCode();
+
+    Page<Sale> findByEmployeeId(Long id, Pageable pageable);
 }

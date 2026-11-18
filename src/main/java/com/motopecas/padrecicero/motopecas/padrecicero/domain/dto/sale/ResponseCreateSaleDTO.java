@@ -11,6 +11,8 @@ public record ResponseCreateSaleDTO(
         LocalDate dateOfSale,
         Long id_employee,
         StatusSale status,
-        BigDecimal totalValue
+        BigDecimal totalValue,
+        Long id_Employee,
+        String name_Employee
 ) {
 }

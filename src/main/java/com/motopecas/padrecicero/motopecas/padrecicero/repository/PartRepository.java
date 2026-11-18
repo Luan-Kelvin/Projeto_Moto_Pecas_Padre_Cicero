@@ -29,7 +29,6 @@ public interface PartRepository extends JpaRepository<Part, Long>, JpaSpecificat
     @Query(value = "SELECT LAST_INSERT_ID()", nativeQuery = true)
     Long generatePartCode();
 
-    Page<Part> findByNameContaining(String name, Pageable pageable);
 
     @Query("""
             SELECT p 

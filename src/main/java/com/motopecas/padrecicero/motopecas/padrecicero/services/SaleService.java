@@ -16,6 +16,8 @@ import com.motopecas.padrecicero.motopecas.padrecicero.exception.salesException.
 import com.motopecas.padrecicero.motopecas.padrecicero.repository.ItemForSaleRepository;
 import com.motopecas.padrecicero.motopecas.padrecicero.repository.SaleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -157,6 +159,23 @@ public class SaleService {
         payment.setPaymentStatus(PaymentStatus.ESTORNADO);
         sale.setStatusSale(StatusSale.CANCELADA);
 
+    }
+
+    // LISTAR TODAS AS VENDAS DA LOJA
+    public Page<ResponseCreateSaleDTO> listSales(Pageable pageable) {
+        return saleRepository.findAll(pageable).map(conversor::converterResponseCreateSale);
+    }
+
+    // BUSCAR VENDA POR ID
+    public ResponseCreateSaleDTO findById(Long id){
+        return conversor.converterResponseCreateSale(saleRepository.findById(id).orElseThrow(
+                () -> new SaleNotFoundException("Venda não encontrada."))
+        );
+    }
+
+    // CONSULTAR VENDAS PRÓRPIAS
+    public Page<ResponseCreateSaleDTO> listMySales(Long idEmployee, Pageable pageable) {
+        return saleRepository.findByEmployeeId(idEmployee, pageable).map(conversor::converterResponseCreateSale);
     }
 
     // GERAR CÓDIGO DE VENDA

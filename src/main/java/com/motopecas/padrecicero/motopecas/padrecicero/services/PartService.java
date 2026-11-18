@@ -182,40 +182,15 @@ public class PartService {
             part.setCategory(dto.category());
         }
 
-        BigDecimal novoCusto = dto.costPrice() != null
-                ? dto.costPrice()
-                : part.getCostPrice();
+        if (dto.costPrice() != null || dto.sellingPrice() != null) {
+            BigDecimal newCostPrice = dto.costPrice() != null
+                    ? dto.costPrice()
+                    : part.getCostPrice();
+            BigDecimal newSellingPrice = dto.sellingPrice() != null
+                    ? dto.sellingPrice()
+                    : part.getSellingPrice();
 
-        BigDecimal novoPrecoVenda = dto.sellingPrice() != null
-                ? dto.sellingPrice()
-                : part.getSellingPrice();
-
-        if (dto.costPrice() != null) {
-
-            if (novoCusto.compareTo(BigDecimal.ZERO) <= 0) {
-                throw new IllegalArgumentException(
-                        "O preço de custo deve ser maior que zero."
-                );
-            }
-
-            part.setCostPrice(novoCusto);
-        }
-
-        if (dto.sellingPrice() != null) {
-
-            if (novoPrecoVenda.compareTo(BigDecimal.ZERO) <= 0) {
-                throw new IllegalArgumentException(
-                        "O preço de venda deve ser maior que zero."
-                );
-            }
-
-            if (novoPrecoVenda.compareTo(novoCusto) <= 0) {
-                throw new IllegalArgumentException(
-                        "O preço de venda deve ser maior que o preço de custo."
-                );
-            }
-
-            part.setSellingPrice(novoPrecoVenda);
+            part.changePrices(newCostPrice, newSellingPrice);
         }
 
         if (dto.minimumStock() != null) {

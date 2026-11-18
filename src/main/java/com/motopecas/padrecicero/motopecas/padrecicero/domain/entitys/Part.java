@@ -47,11 +47,9 @@ public class Part {
     private String partCode;
 
     @NotNull
-    @Setter
     private BigDecimal costPrice;
 
     @NotNull
-    @Setter
     private BigDecimal sellingPrice;
 
     @NotNull
@@ -147,6 +145,31 @@ public class Part {
             throw new IllegalAccessError("ERRO! Peça já ativada.");
         }
         this.active = true;
+    }
+
+    public void changePrices(
+            BigDecimal newCostPrice,
+            BigDecimal newSellingPrice
+    ) {
+
+        if (newCostPrice == null ||
+                newCostPrice.compareTo(BigDecimal.ZERO) <= 0) {
+
+            throw new InvalidPartPriceException(
+                    "Preço de custo inválido."
+            );
+        }
+
+        if (newSellingPrice == null ||
+                newSellingPrice.compareTo(newCostPrice) <= 0) {
+
+            throw new InvalidPartPriceException(
+                    "Preço de venda deve ser maior que o custo."
+            );
+        }
+
+        this.costPrice = newCostPrice;
+        this.sellingPrice = newSellingPrice;
     }
 
 }

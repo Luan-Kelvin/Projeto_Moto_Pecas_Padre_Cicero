@@ -12,6 +12,7 @@ import com.motopecas.padrecicero.motopecas.padrecicero.domain.enuns.JobType;
 import com.motopecas.padrecicero.motopecas.padrecicero.domain.enuns.MovementType;
 import com.motopecas.padrecicero.motopecas.padrecicero.domain.enuns.PartCategory;
 import com.motopecas.padrecicero.motopecas.padrecicero.exception.partExceptions.PartAlreadyExistsException;
+import com.motopecas.padrecicero.motopecas.padrecicero.exception.partExceptions.InvalidPartPriceException;
 import com.motopecas.padrecicero.motopecas.padrecicero.exception.partExceptions.PartNotFoundException;
 import com.motopecas.padrecicero.motopecas.padrecicero.repository.InventoryMovementRepository;
 import com.motopecas.padrecicero.motopecas.padrecicero.repository.PartRepository;
@@ -440,6 +441,50 @@ public class PartServiceTest {
     }
 
     @Test
+    @DisplayName("Deve alterar apenas o preço de venda usando o preço de custo atual")
+    void shouldUpdateOnlySellingPrice() {
+        Employee employee = new Employee("Joaquim", "jojo@gmail.com", "12345", JobType.ADMIN);
+        Part part = new Part(
+                "Patim De Freio",
+                null,
+                "Cobreq",
+                PartCategory.FREIO,
+                "12345",
+                BigDecimal.valueOf(17.9),
+                BigDecimal.valueOf(33.9),
+                10,
+                employee
+        );
+        PartPutDTO dto = new PartPutDTO(
+                1L, null, null, null, null, null, BigDecimal.valueOf(42.5), null
+        );
+        PartGetDTO response = new PartGetDTO(
+                1L,
+                "12345",
+                part.getName(),
+                part.getApplication(),
+                part.getMark(),
+                part.getCategory(),
+                part.getCostPrice(),
+                BigDecimal.valueOf(42.5),
+                true,
+                part.getCreationDate(),
+                null,
+                null
+        );
+
+        when(partRepository.findById(dto.id())).thenReturn(Optional.of(part));
+        when(conversor.converterPart(part)).thenReturn(response);
+
+        PartGetDTO result = partService.updatePart(dto);
+
+        assertThat(result).isSameAs(response);
+        assertThat(part.getCostPrice()).isEqualByComparingTo(BigDecimal.valueOf(17.9));
+        assertThat(part.getSellingPrice()).isEqualByComparingTo(BigDecimal.valueOf(42.5));
+        verify(conversor).converterPart(part);
+    }
+
+    @Test
     @DisplayName("Deve lançar exceção se a peça não for encontrada")
     void throwsExceptionIfTheIdDoesNotExist(){
         Employee employee = new Employee("Joaquim", "jojo@gmail.com", "12345", JobType.ADMIN);
@@ -571,7 +616,7 @@ public class PartServiceTest {
         when(partRepository.findById(partPutDTO.id())).thenReturn(Optional.of(part));
         when(partRepository.existsByNameAndMarkAndIdNot(partPutDTO.name(), partPutDTO.mark(), partPutDTO.id())).thenReturn(false);
 
-        assertThrows(IllegalArgumentException.class, () -> partService.updatePart(partPutDTO));
+        assertThrows(InvalidPartPriceException.class, () -> partService.updatePart(partPutDTO));
 
         verify(partRepository).findById(partPutDTO.id());
         verify(partRepository).existsByNameAndMarkAndIdNot(partPutDTO.name(), partPutDTO.mark(), partPutDTO.id());
@@ -609,7 +654,7 @@ public class PartServiceTest {
         when(partRepository.findById(partPutDTO.id())).thenReturn(Optional.of(part));
         when(partRepository.existsByNameAndMarkAndIdNot(partPutDTO.name(), partPutDTO.mark(), partPutDTO.id())).thenReturn(false);
 
-        assertThrows(IllegalArgumentException.class, () -> partService.updatePart(partPutDTO));
+        assertThrows(InvalidPartPriceException.class, () -> partService.updatePart(partPutDTO));
 
         verify(partRepository).findById(partPutDTO.id());
         verify(partRepository).existsByNameAndMarkAndIdNot(partPutDTO.name(), partPutDTO.mark(), partPutDTO.id());
@@ -647,7 +692,7 @@ public class PartServiceTest {
         when(partRepository.findById(partPutDTO.id())).thenReturn(Optional.of(part));
         when(partRepository.existsByNameAndMarkAndIdNot(partPutDTO.name(), partPutDTO.mark(), partPutDTO.id())).thenReturn(false);
 
-        assertThrows(IllegalArgumentException.class, () -> partService.updatePart(partPutDTO));
+        assertThrows(InvalidPartPriceException.class, () -> partService.updatePart(partPutDTO));
 
         verify(partRepository).findById(partPutDTO.id());
         verify(partRepository).existsByNameAndMarkAndIdNot(partPutDTO.name(), partPutDTO.mark(), partPutDTO.id());

@@ -53,12 +53,12 @@ class StockServiceTest {
     @Test
     @DisplayName("Deve consultar a quantidade atual do estoque")
     void shouldReturnCurrentStockQuantity() {
-        when(stockRepository.findByCurrentQuantity(1L)).thenReturn(12);
+        when(stockRepository.findCurrentQuantityById(1L)).thenReturn(12);
 
         Integer quantity = stockService.checkQuantity(1L);
 
         assertThat(quantity).isEqualTo(12);
-        verify(stockRepository).findByCurrentQuantity(1L);
+        verify(stockRepository).findCurrentQuantityById(1L);
     }
 
     @Test

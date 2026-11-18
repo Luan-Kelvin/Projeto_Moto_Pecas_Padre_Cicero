@@ -117,7 +117,7 @@ public class SaleService {
 
     // FINALIZAR VENDA
     @Transactional
-    public void completeSale(SaleConclusionDTO dto){
+    public String completeSale(SaleConclusionDTO dto){
         Sale sale = saleRepository.findById(dto.id_sale())
                 .orElseThrow(() -> new SaleNotFoundException(String.format("Venda com ID = %s, não foi encontrada.", dto.id_sale())));
 
@@ -137,11 +137,13 @@ public class SaleService {
         sale.addPayment(payment);
         sale.setStatusSale(StatusSale.CONCLUIDA);
         saleRepository.save(sale);
+
+        return String.format("Venda %s finalizada com sucesso! Valor total R$ %.2f", sale.getSaleCode(), sale.getTotalValue());
     }
 
     // CANCELAR VENDA
     @Transactional
-    public void cancelSale(Long idSale){
+    public String cancelSale(Long idSale){
         Sale sale = saleRepository.findById(idSale)
                 .orElseThrow(() -> new SaleNotFoundException("ERRO! Venda não foi enontrada."));
 
@@ -158,6 +160,9 @@ public class SaleService {
 
         payment.setPaymentStatus(PaymentStatus.ESTORNADO);
         sale.setStatusSale(StatusSale.CANCELADA);
+
+        return String.format("Venda %s CANCELADA com sucesso! Valor total R$ %.2f", sale.getSaleCode(), sale.getTotalValue());
+
 
     }
 

@@ -66,7 +66,8 @@ public class SaleServiceTest {
         ReflectionTestUtils.setField(employee, "verified", true);
 
         ResponseCreateSaleDTO responseDTO = new ResponseCreateSaleDTO(
-                1L, String.valueOf(salesCode), LocalDate.now(), idEmployee, StatusSale.ABERTA, BigDecimal.ZERO
+                1L, String.valueOf(salesCode), LocalDate.now(), idEmployee, StatusSale.ABERTA, BigDecimal.ZERO,
+                idEmployee, employee.getName()
         );
 
         when(saleRepository.generateSaleCode()).thenReturn(salesCode);
@@ -602,11 +603,17 @@ public class SaleServiceTest {
         Payment payment = new Payment(BigDecimal.valueOf(150), PaymentMethod.PIX, null, sale);
         payment.setPaymentStatus(PaymentStatus.APROVADO);
         sale.addPayment(payment);
+        ReflectionTestUtils.setField(sale, "totalValue", BigDecimal.valueOf(150));
 
         when(saleRepository.findById(1L)).thenReturn(Optional.of(sale));
 
-        saleService.cancelSale(1L);
+        String response = saleService.cancelSale(1L);
 
+        assertThat(response).isEqualTo(String.format(
+                "Venda %s CANCELADA com sucesso! Valor total R$ %.2f",
+                sale.getSaleCode(),
+                sale.getTotalValue()
+        ));
         assertThat(firstStock.getCurrentQuantity()).isEqualTo(12);
         assertThat(secondStock.getCurrentQuantity()).isEqualTo(7);
         assertThat(payment.getPaymentStatus()).isEqualTo(PaymentStatus.ESTORNADO);
@@ -647,7 +654,14 @@ public class SaleServiceTest {
 
         when(saleRepository.findById(1L)).thenReturn(Optional.of(sale));
 
-        saleService.completeSale(conclusionDTO);
+        String response = saleService.completeSale(conclusionDTO);
+
+        assertThat(sale.getTotalValue()).isEqualByComparingTo(BigDecimal.valueOf(50));
+        assertThat(response).isEqualTo(String.format(
+                "Venda %s finalizada com sucesso! Valor total R$ %.2f",
+                sale.getSaleCode(),
+                sale.getTotalValue()
+        ));
 
         ArgumentCaptor<Sale> saleCaptor = ArgumentCaptor.forClass(Sale.class);
 
@@ -659,7 +673,7 @@ public class SaleServiceTest {
 
         assertThat(payment).isNotNull();
         assertThat(payment.getPaymentMethod()).isEqualTo(PaymentMethod.PIX);
-        assertThat(payment.getValuePayment()).isEqualTo(sale.getTotalValue());
+        assertThat(payment.getValuePayment()).isEqualByComparingTo(BigDecimal.valueOf(50));
         assertThat(payment.getPaymentStatus()).isEqualTo(PaymentStatus.APROVADO);
 
         assertThat(saleSaved.getStatusSale()).isEqualTo(StatusSale.CONCLUIDA);

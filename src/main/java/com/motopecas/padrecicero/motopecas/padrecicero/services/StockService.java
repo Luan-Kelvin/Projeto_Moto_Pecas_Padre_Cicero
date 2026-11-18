@@ -35,7 +35,7 @@ public class StockService {
 
     // CONSULTAR QUANTIDADE EM ESTOQUE
     public Integer checkQuantity(Long id){
-        return stockRepository.findByCurrentQuantity(id);
+        return stockRepository.findCurrentQuantityById(id);
     }
 
     // REGISTRAR ENTRADA DE PEÇAS (OBS: USE @AUTHENTICATIONPRINCIPAL PARA PEGAR O FUNCIONARIO QUE FAZ A OPERAÇÃO, ADD NO CONTROLLER)

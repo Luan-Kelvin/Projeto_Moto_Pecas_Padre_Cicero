@@ -97,9 +97,9 @@ public class Sale {
         BigDecimal total = BigDecimal.ZERO;
 
         for (ItemForSale i : this.itemForSales){
-            total.add(i.getSubtotal());
+            total = total.add(i.getSubtotal());
         }
 
-        this.totalValue.add(total);
+        this.totalValue = total;
     }
 }

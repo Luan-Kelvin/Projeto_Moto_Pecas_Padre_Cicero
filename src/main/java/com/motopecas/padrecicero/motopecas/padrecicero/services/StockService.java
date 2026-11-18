@@ -58,7 +58,6 @@ public class StockService {
         );
 
         movementService.saveMovement(movement);
-        stock.setLastUpdate(LocalDateTime.now());
     }
 
     // REGISTRAR SAÍDA DE PEÇAS (OBS: USE @AUTHENTICATIONPRINCIPAL PARA PEGAR O FUNCIONARIO QUE FAZ A OPERAÇÃO, ADD NO CONTROLLER)
@@ -81,7 +80,6 @@ public class StockService {
         );
 
         movementService.saveMovement(movement);
-        stock.setLastUpdate(LocalDateTime.now());
     }
 
 
@@ -95,8 +93,7 @@ public class StockService {
         Stock stock = part.getStock();
         Integer previousQuantity = stock.getCurrentQuantity();
 
-        stock.setCurrentQuantity(dto.currentQuantity());
-        stock.setLastUpdate(LocalDateTime.now());
+        stock.adjustQuantity(dto.currentQuantity());
 
         InventoryMovement movement = new InventoryMovement(
                 stock, MovementType.AJUSTE, previousQuantity, dto.currentQuantity(), dto.reason(), employee

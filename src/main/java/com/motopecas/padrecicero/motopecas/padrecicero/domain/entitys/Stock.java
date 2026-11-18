@@ -27,10 +27,8 @@ public class Stock {
 
     @NotNull
     @Min(value = 0, message = "ERRO! Quantidade não pode ser menor que zero.")
-    @Setter
     private Integer currentQuantity;
 
-    @Setter
     private LocalDateTime lastUpdate;
 
     @OneToOne(fetch = FetchType.LAZY)
@@ -69,6 +67,7 @@ public class Stock {
         }
 
         this.currentQuantity += quantity;
+        this.lastUpdate = LocalDateTime.now();
     }
 
     // DAR SAÍDA DE PEÇAS NO ESTOQUE
@@ -80,5 +79,23 @@ public class Stock {
         }
 
         this.currentQuantity -= quantity;
+        this.lastUpdate = LocalDateTime.now();
+    }
+
+    // REALIZAR AJUSTE
+    public void adjustQuantity(Integer newQuantity) {
+
+        if (newQuantity == null || newQuantity < 0) {
+            throw new InvalidNumberOfPiecesException(
+                    "A quantidade não pode ser negativa."
+            );
+        }
+
+        this.currentQuantity = newQuantity;
+        this.lastUpdate = LocalDateTime.now();
+    }
+
+    public void updateLast(){
+        this.lastUpdate = LocalDateTime.now();
     }
 }

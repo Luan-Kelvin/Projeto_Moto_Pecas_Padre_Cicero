@@ -92,7 +92,7 @@ public class EmployeeService {
                 ));
 
         if (dto.name() != null){
-            employee.setName(dto.name());
+            employee.changeName(dto.name());
         }
 
         boolean emailChanged = dto.email() != null && !dto.email().equalsIgnoreCase(employee.getEmail());
@@ -130,7 +130,7 @@ public class EmployeeService {
         boolean changedJob = !dto.newJob().equals(employee.getJobType());
 
         if (changedJob){
-            employee.setJobType(dto.newJob());
+            employee.changeJobType(dto.newJob());
         }
 
         return conversor.converterEmployee(employee);

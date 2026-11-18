@@ -36,7 +36,6 @@ public class Employee implements UserDetails {
     private Long id;
 
     @NotBlank
-    @Setter
     private String name;
 
     @NotBlank
@@ -49,7 +48,6 @@ public class Employee implements UserDetails {
 
     @Enumerated(EnumType.STRING)
     @NotNull
-    @Setter
     private JobType jobType;
 
     @NotNull
@@ -116,6 +114,28 @@ public class Employee implements UserDetails {
         }
 
         this.movements.add(movement);
+    }
+
+    // ALTERAR NOME
+    public void changeName(String newName) {
+        if (newName == null || newName.isBlank()) {
+            throw new IllegalArgumentException(
+                    "O nome não pode ser vazio."
+            );
+        }
+
+        this.name = newName.trim();
+    }
+
+    // ALTERAR CARGO
+    public void changeJobType(JobType newJob) {
+        if (newJob == null) {
+            throw new IllegalArgumentException(
+                    "O cargo não pode ser nulo."
+            );
+        }
+
+        this.jobType = newJob;
     }
 
     @Override

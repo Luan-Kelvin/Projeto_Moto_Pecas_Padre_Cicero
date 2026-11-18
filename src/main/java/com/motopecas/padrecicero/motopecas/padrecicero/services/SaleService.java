@@ -88,6 +88,7 @@ public class SaleService {
         itemForSaleRepository.save(item);
 
         sale.addItemSale(item);
+        sale.recalculateTotal();
 
         reducePartInventory(part, dto.quantity(),sale.getEmployee().getId());
 
@@ -108,6 +109,7 @@ public class SaleService {
         }
 
         sale.removeItemForSale(item);
+        sale.recalculateTotal();
         itemForSaleRepository.delete(item);
 
         increaseStockPart(item.getPart(), item.getQuantity(), sale.getEmployee().getId());

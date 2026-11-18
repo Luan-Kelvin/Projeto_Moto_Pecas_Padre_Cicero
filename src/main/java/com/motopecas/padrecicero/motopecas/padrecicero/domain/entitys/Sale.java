@@ -66,6 +66,18 @@ public class Sale {
 
     // ADICIONAR ITEM A LISTA DE ITENS DE VENDAS
     public void addItemSale(ItemForSale item){
+        if (item == null) {
+            throw new IllegalArgumentException(
+                    "Item não pode ser nulo."
+            );
+        }
+
+        if (itemForSales.contains(item)) {
+            throw new IllegalStateException(
+                    "Item já adicionado à venda."
+            );
+        }
+
         itemForSales.add(item);
 
         item.addSale(this);
@@ -90,6 +102,14 @@ public class Sale {
     // ADICIONAR FORMA DE PAGAMENTO
     public void addPayment(Payment payment){
         this.paymentInfo = payment;
+    }
+
+    // CALCULAR VALOR TOTAL DA VENDA
+    public void recalculateTotal() {
+
+        this.totalValue = itemForSales.stream()
+                .map(ItemForSale::getSubtotal)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
     // CALCULAR VALOR TOTAL DA COMPRA

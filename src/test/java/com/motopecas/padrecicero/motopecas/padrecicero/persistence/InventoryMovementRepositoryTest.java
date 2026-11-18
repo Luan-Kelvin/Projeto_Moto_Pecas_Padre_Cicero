@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
 import org.springframework.boot.jpa.test.autoconfigure.TestEntityManager;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -53,12 +54,12 @@ public class InventoryMovementRepositoryTest {
 
         Stock stock = new Stock(part);
         entityManager.persistAndFlush(stock);
-        stock.setCurrentQuantity(20);
+        ReflectionTestUtils.setField(stock, "currentQuantity", 20);
 
         InventoryMovement inventoryMovement = new InventoryMovement(
                 stock, MovementType.AJUSTE, 20, 15, "Divergência na contagem física", employee
         );
-        stock.setCurrentQuantity(15);
+        ReflectionTestUtils.setField(stock, "currentQuantity", 15);
 
         InventoryMovement movementSaved = inventoryMovementRepository.save(inventoryMovement);
         entityManager.flush();

@@ -20,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
 import org.springframework.boot.jpa.test.autoconfigure.TestEntityManager;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -54,7 +55,7 @@ class RelatorioRepositoryTest {
                 employee
         );
         Stock stock = new Stock(part);
-        stock.setCurrentQuantity(2);
+        ReflectionTestUtils.setField(stock, "currentQuantity", 2);
         entityManager.persist(part);
         entityManager.persist(stock);
 
@@ -101,7 +102,7 @@ class RelatorioRepositoryTest {
             BigDecimal unitPrice
     ) {
         Sale sale = new Sale(code, date, employee);
-        sale.setStatusSale(status);
+        ReflectionTestUtils.setField(sale, "statusSale", status);
 
         ItemForSale item = new ItemForSale(quantity, unitPrice, part, sale);
         sale.addItemSale(item);
@@ -111,7 +112,7 @@ class RelatorioRepositoryTest {
         entityManager.persist(item);
 
         Payment payment = new Payment(sale.getTotalValue(), PaymentMethod.PIX, null, sale);
-        payment.setPaymentStatus(paymentStatus);
+        ReflectionTestUtils.setField(payment, "paymentStatus", paymentStatus);
         sale.addPayment(payment);
         entityManager.persist(payment);
     }

@@ -157,7 +157,11 @@ public class SaleService {
         }
 
         for (ItemForSale i : sale.getItemForSales()){
-            i.getPart().getStock().addNewQuantityParts(i.getQuantity());
+            increaseStockPart(i.getPart(), i.getQuantity(), sale.getEmployee().getId());
+        }
+
+        if (payment != null && payment.getPaymentStatus() == PaymentStatus.APROVADO) {
+            payment.refund();
         }
 
         sale.cancel();

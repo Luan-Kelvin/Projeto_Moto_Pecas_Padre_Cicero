@@ -4,6 +4,7 @@ import com.motopecas.padrecicero.motopecas.padrecicero.domain.dto.sale.ItemForSa
 import com.motopecas.padrecicero.motopecas.padrecicero.domain.dto.sale.ResponseCreateSaleDTO;
 import com.motopecas.padrecicero.motopecas.padrecicero.domain.dto.sale.ResponseItemForSaleDTO;
 import com.motopecas.padrecicero.motopecas.padrecicero.domain.dto.sale.SaleConclusionDTO;
+import com.motopecas.padrecicero.motopecas.padrecicero.domain.dto.stock.MovementDataDTO;
 import com.motopecas.padrecicero.motopecas.padrecicero.domain.entitys.*;
 import com.motopecas.padrecicero.motopecas.padrecicero.domain.enuns.*;
 import com.motopecas.padrecicero.motopecas.padrecicero.exception.emplyeeExceptions.EmployeeInactiveException;
@@ -67,7 +68,7 @@ public class SaleServiceTest {
 
         ResponseCreateSaleDTO responseDTO = new ResponseCreateSaleDTO(
                 1L, String.valueOf(salesCode), LocalDate.now(), idEmployee, StatusSale.ABERTA, BigDecimal.ZERO,
-                idEmployee, employee.getName()
+                employee.getName()
         );
 
         when(saleRepository.generateSaleCode()).thenReturn(salesCode);
@@ -290,7 +291,7 @@ public class SaleServiceTest {
 
         Sale sale = new Sale("1010", LocalDate.now(), employee);
         ReflectionTestUtils.setField(sale, "id", 1L);
-        sale.setStatusSale(StatusSale.CANCELADA);
+        ReflectionTestUtils.setField(sale, "statusSale", StatusSale.CANCELADA);
 
         when(partService.findById(1L)).thenReturn(part);
         when(stockService.checkQuantity(part.getStock().getId())).thenReturn(15);
@@ -468,7 +469,7 @@ public class SaleServiceTest {
 
         Sale sale = new Sale("1010", LocalDate.now(), employee);
         ReflectionTestUtils.setField(sale, "id", 1L);
-        sale.setStatusSale(StatusSale.CANCELADA);
+        ReflectionTestUtils.setField(sale, "statusSale", StatusSale.CANCELADA);
 
         ItemForSale item = new ItemForSale(5, BigDecimal.valueOf(10), part, sale);
         ReflectionTestUtils.setField(item, "id", 1L);
@@ -488,7 +489,7 @@ public class SaleServiceTest {
     void shouldThrowExceptionWhenCompletingSaleThatIsNotOpen() {
         SaleConclusionDTO conclusionDTO = new SaleConclusionDTO(1L, PaymentMethod.PIX, null);
         Sale sale = new Sale("12345", LocalDate.now(), new Employee());
-        sale.setStatusSale(StatusSale.CANCELADA);
+        ReflectionTestUtils.setField(sale, "statusSale", StatusSale.CANCELADA);
 
         when(saleRepository.findById(1L)).thenReturn(Optional.of(sale));
 
@@ -527,7 +528,7 @@ public class SaleServiceTest {
     void shouldThrowExceptionWhenCancelingAlreadyCanceledSale() {
         Employee employee = new Employee();
         Sale sale = new Sale("12345", LocalDate.now(), employee);
-        sale.setStatusSale(StatusSale.CANCELADA);
+        ReflectionTestUtils.setField(sale, "statusSale", StatusSale.CANCELADA);
 
         Part part = new Part(
                 "Patim Freio",
@@ -541,14 +542,14 @@ public class SaleServiceTest {
                 employee
         );
         Stock stock = new Stock();
-        stock.setCurrentQuantity(10);
+        ReflectionTestUtils.setField(stock, "currentQuantity", 10);
         part.addStock(stock);
 
         ItemForSale item = new ItemForSale(2, BigDecimal.valueOf(15), part, sale);
         sale.addItemSale(item);
 
         Payment payment = new Payment(BigDecimal.valueOf(30), PaymentMethod.PIX, null, sale);
-        payment.setPaymentStatus(PaymentStatus.APROVADO);
+        payment.approve();
         sale.addPayment(payment);
 
         when(saleRepository.findById(1L)).thenReturn(Optional.of(sale));
@@ -559,12 +560,14 @@ public class SaleServiceTest {
         assertThat(payment.getPaymentStatus()).isEqualTo(PaymentStatus.APROVADO);
         assertThat(sale.getStatusSale()).isEqualTo(StatusSale.CANCELADA);
         verify(saleRepository).findById(1L);
+        verify(stockService, never()).registerEntry(any(), anyLong());
     }
 
     @Test
     @DisplayName("Deve estornar pagamento, cancelar venda e devolver itens ao estoque")
     void shouldCancelSaleRefundPaymentAndReturnItemsToStock() {
         Employee employee = new Employee();
+        ReflectionTestUtils.setField(employee, "id", 7L);
         Sale sale = new Sale("12345", LocalDate.now(), employee);
 
         Part firstPart = new Part(
@@ -578,8 +581,9 @@ public class SaleServiceTest {
                 5,
                 employee
         );
+        ReflectionTestUtils.setField(firstPart, "id", 11L);
         Stock firstStock = new Stock();
-        firstStock.setCurrentQuantity(10);
+        ReflectionTestUtils.setField(firstStock, "currentQuantity", 10);
         firstPart.addStock(firstStock);
 
         Part secondPart = new Part(
@@ -593,15 +597,20 @@ public class SaleServiceTest {
                 5,
                 employee
         );
+        ReflectionTestUtils.setField(secondPart, "id", 12L);
         Stock secondStock = new Stock();
-        secondStock.setCurrentQuantity(3);
+        ReflectionTestUtils.setField(secondStock, "currentQuantity", 3);
         secondPart.addStock(secondStock);
 
-        sale.addItemSale(new ItemForSale(2, BigDecimal.valueOf(15), firstPart, sale));
-        sale.addItemSale(new ItemForSale(4, BigDecimal.valueOf(30), secondPart, sale));
+        ItemForSale firstItem = new ItemForSale(2, BigDecimal.valueOf(15), firstPart, sale);
+        ItemForSale secondItem = new ItemForSale(4, BigDecimal.valueOf(30), secondPart, sale);
+        ReflectionTestUtils.setField(firstItem, "id", 1L);
+        ReflectionTestUtils.setField(secondItem, "id", 2L);
+        sale.addItemSale(firstItem);
+        sale.addItemSale(secondItem);
 
         Payment payment = new Payment(BigDecimal.valueOf(150), PaymentMethod.PIX, null, sale);
-        payment.setPaymentStatus(PaymentStatus.APROVADO);
+        payment.approve();
         sale.addPayment(payment);
         ReflectionTestUtils.setField(sale, "totalValue", BigDecimal.valueOf(150));
 
@@ -614,15 +623,18 @@ public class SaleServiceTest {
                 sale.getSaleCode(),
                 sale.getTotalValue()
         ));
-        assertThat(firstStock.getCurrentQuantity()).isEqualTo(12);
-        assertThat(secondStock.getCurrentQuantity()).isEqualTo(7);
+        assertThat(firstStock.getCurrentQuantity()).isEqualTo(10);
+        assertThat(secondStock.getCurrentQuantity()).isEqualTo(3);
         assertThat(payment.getPaymentStatus()).isEqualTo(PaymentStatus.ESTORNADO);
         assertThat(sale.getStatusSale()).isEqualTo(StatusSale.CANCELADA);
         verify(saleRepository).findById(1L);
+        verify(stockService).registerEntry(new MovementDataDTO(11L, 2), 7L);
+        verify(stockService).registerEntry(new MovementDataDTO(12L, 4), 7L);
+        verifyNoMoreInteractions(stockService);
     }
 
     @Test
-    @DisplayName("Deve finalizar a venda criando um novo Payment e mudando o status de venda para 'Finalizada'")
+    @DisplayName("Deve solicitar o pagamento e manter a venda aberta até a confirmação")
     void completeSale(){
         SaleConclusionDTO conclusionDTO = new SaleConclusionDTO(
                 1L,
@@ -658,7 +670,7 @@ public class SaleServiceTest {
 
         assertThat(sale.getTotalValue()).isEqualByComparingTo(BigDecimal.valueOf(50));
         assertThat(response).isEqualTo(String.format(
-                "Venda %s finalizada com sucesso! Valor total R$ %.2f",
+                "Pagamento solicitado! Venda %s. Valor: R$ %.2f. Status: PENDENTE.",
                 sale.getSaleCode(),
                 sale.getTotalValue()
         ));
@@ -674,9 +686,9 @@ public class SaleServiceTest {
         assertThat(payment).isNotNull();
         assertThat(payment.getPaymentMethod()).isEqualTo(PaymentMethod.PIX);
         assertThat(payment.getValuePayment()).isEqualByComparingTo(BigDecimal.valueOf(50));
-        assertThat(payment.getPaymentStatus()).isEqualTo(PaymentStatus.APROVADO);
+        assertThat(payment.getPaymentStatus()).isEqualTo(PaymentStatus.PENDENTE);
 
-        assertThat(saleSaved.getStatusSale()).isEqualTo(StatusSale.CONCLUIDA);
+        assertThat(saleSaved.getStatusSale()).isEqualTo(StatusSale.ABERTA);
 
         verify(saleRepository).findById(1L);
     }

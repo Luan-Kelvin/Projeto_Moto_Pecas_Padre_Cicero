@@ -276,7 +276,7 @@ class StockServiceTest {
 
     private Stock createStock(Integer quantity, Long id) {
         Stock stock = new Stock();
-        stock.setCurrentQuantity(quantity);
+        ReflectionTestUtils.setField(stock, "currentQuantity", quantity);
         ReflectionTestUtils.setField(stock, "id", id);
         return stock;
     }

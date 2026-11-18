@@ -109,11 +109,15 @@ public class Employee implements UserDetails {
 
     // ADICIONAR NOVA MOVIMENTAÇÃO
     public void addMovement(InventoryMovement movement){
-        if (movement == null){
-            throw new NullPointerException();
+        if (movement == null) {
+            throw new IllegalArgumentException(
+                    "A movimentação não pode ser nula."
+            );
         }
 
-        this.movements.add(movement);
+        if (!movements.contains(movement)) {
+            movements.add(movement);
+        }
     }
 
     // ALTERAR NOME

@@ -9,6 +9,7 @@ import com.motopecas.padrecicero.motopecas.padrecicero.domain.entitys.Part;
 import com.motopecas.padrecicero.motopecas.padrecicero.domain.entitys.Stock;
 import com.motopecas.padrecicero.motopecas.padrecicero.domain.enuns.InputStatus;
 import com.motopecas.padrecicero.motopecas.padrecicero.domain.enuns.MovementType;
+import com.motopecas.padrecicero.motopecas.padrecicero.exception.emplyeeExceptions.EmployeeInactiveException;
 import com.motopecas.padrecicero.motopecas.padrecicero.repository.StockRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -47,6 +48,8 @@ public class StockService {
 
         Employee employee = employeeService.findById(idEmployee);
 
+        validateEmployeeOperation(employee);
+
         Stock stock = part.getStock();
         Integer previousQuantity = stock.getCurrentQuantity();
 
@@ -69,6 +72,8 @@ public class StockService {
 
         Employee employee = employeeService.findById(idEmployee);
 
+        validateEmployeeOperation(employee);
+
         Stock stock = part.getStock();
         Integer previousQuantity = stock.getCurrentQuantity();
 
@@ -89,6 +94,8 @@ public class StockService {
         Part part = partService.findById(dto.idParty());
 
         Employee employee = employeeService.findById(idEmployee);
+
+        validateEmployeeOperation(employee);
 
         Stock stock = part.getStock();
         Integer previousQuantity = stock.getCurrentQuantity();
@@ -137,6 +144,17 @@ public class StockService {
     private void validatePositiveQuantity(Integer quantity){
         if (quantity == null || quantity <= 0){
             throw new IllegalArgumentException("A quantidade deve ser maior que zero.");
+        }
+    }
+
+    private void validateEmployeeOperation(Employee employee) {
+
+        if (!Boolean.TRUE.equals(employee.getActive()) ||
+                !Boolean.TRUE.equals(employee.getVerified())) {
+
+            throw new EmployeeInactiveException(
+                    "Funcionário inativo ou não verificado."
+            );
         }
     }
 }

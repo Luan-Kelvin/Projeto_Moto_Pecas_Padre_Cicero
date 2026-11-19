@@ -69,6 +69,13 @@ public class SaleService {
     public ResponseItemForSaleDTO addItemForSale(ItemForSalePostDTO dto){
 
         Part part = partService.findById(dto.id_part());
+
+        if (!Boolean.TRUE.equals(part.getActive())) {
+            throw new IllegalStateException(
+                    "Não é possível vender uma peça desativada."
+            );
+        }
+
         Integer quanttyInStock = stockService.checkQuantity(part.getStock().getId());
 
         if (quanttyInStock < dto.quantity()){
@@ -236,6 +243,7 @@ public class SaleService {
 
         stockService.registerEntry(movementDataDTO, idEmployee);
     }
+
 
 
 }

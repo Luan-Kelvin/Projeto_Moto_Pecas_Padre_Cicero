@@ -6,8 +6,8 @@ import com.motopecas.padrecicero.motopecas.padrecicero.domain.dto.sale.ResponseI
 import com.motopecas.padrecicero.motopecas.padrecicero.domain.dto.sale.SaleConclusionDTO;
 import com.motopecas.padrecicero.motopecas.padrecicero.domain.entitys.Employee;
 import com.motopecas.padrecicero.motopecas.padrecicero.services.SaleService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
-import jakarta.websocket.server.PathParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/sale")
+@SecurityRequirement(name = "bearer-key")
 public class SaleControllerPost {
 
     @Autowired

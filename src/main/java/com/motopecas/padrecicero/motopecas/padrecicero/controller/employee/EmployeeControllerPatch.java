@@ -4,6 +4,7 @@ import com.motopecas.padrecicero.motopecas.padrecicero.domain.dto.employee.Accou
 import com.motopecas.padrecicero.motopecas.padrecicero.domain.dto.employee.ChangeEmployeeJobDTO;
 import com.motopecas.padrecicero.motopecas.padrecicero.domain.dto.employee.EmployeeGetDTO;
 import com.motopecas.padrecicero.motopecas.padrecicero.services.EmployeeService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/employee")
+@SecurityRequirement(name = "bearer-key")
 public class EmployeeControllerPatch {
 
     @Autowired

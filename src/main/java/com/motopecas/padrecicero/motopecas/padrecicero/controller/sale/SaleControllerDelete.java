@@ -1,6 +1,7 @@
 package com.motopecas.padrecicero.motopecas.padrecicero.controller.sale;
 
 import com.motopecas.padrecicero.motopecas.padrecicero.services.SaleService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -8,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/sale")
+@SecurityRequirement(name = "bearer-key")
 public class SaleControllerDelete {
 
     @Autowired

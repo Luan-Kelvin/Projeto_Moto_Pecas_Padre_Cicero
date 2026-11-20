@@ -3,6 +3,7 @@ package com.motopecas.padrecicero.motopecas.padrecicero.controller.employee;
 import com.motopecas.padrecicero.motopecas.padrecicero.domain.dto.employee.EmployeeGetDTO;
 import com.motopecas.padrecicero.motopecas.padrecicero.domain.dto.employee.EmployeePostDTO;
 import com.motopecas.padrecicero.motopecas.padrecicero.services.EmployeeService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,6 +44,7 @@ public class EmployeeControllerPost {
 
     @PostMapping("/register")
     @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE')")
+    @SecurityRequirement(name = "bearer-key")
     public ResponseEntity<EmployeeGetDTO> registerEmployee(@RequestBody @Valid EmployeePostDTO dto) throws MessagingException {
         EmployeeGetDTO employeeGetDTO = employeeService.registerEmployee(dto);
 

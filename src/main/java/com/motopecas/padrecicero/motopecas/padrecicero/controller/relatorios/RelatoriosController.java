@@ -5,6 +5,7 @@ import com.motopecas.padrecicero.motopecas.padrecicero.domain.dto.relatorios.Pec
 import com.motopecas.padrecicero.motopecas.padrecicero.domain.dto.relatorios.ResumoEstoqueBaixoDTO;
 import com.motopecas.padrecicero.motopecas.padrecicero.domain.dto.relatorios.TotalVendidoDTO;
 import com.motopecas.padrecicero.motopecas.padrecicero.services.relatorios.RelatoriosService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -19,6 +20,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/relatorios")
 @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE')")
+@SecurityRequirement(name = "bearer-key")
 public class RelatoriosController {
 
     private final RelatoriosService relatoriosService;

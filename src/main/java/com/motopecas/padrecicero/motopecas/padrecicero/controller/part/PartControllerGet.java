@@ -3,6 +3,7 @@ package com.motopecas.padrecicero.motopecas.padrecicero.controller.part;
 import com.motopecas.padrecicero.motopecas.padrecicero.domain.dto.part.PartGetDTO;
 import com.motopecas.padrecicero.motopecas.padrecicero.domain.dto.part.PartMovementDTO;
 import com.motopecas.padrecicero.motopecas.padrecicero.services.PartService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/part")
+@SecurityRequirement(name = "bearer-key")
 public class PartControllerGet {
 
     @Autowired

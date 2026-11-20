@@ -7,6 +7,7 @@ import com.motopecas.padrecicero.motopecas.padrecicero.domain.dto.stock.Movement
 import com.motopecas.padrecicero.motopecas.padrecicero.domain.entitys.Employee;
 import com.motopecas.padrecicero.motopecas.padrecicero.services.PartService;
 import com.motopecas.padrecicero.motopecas.padrecicero.services.StockService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -22,6 +23,7 @@ import java.net.URI;
 
 @RestController
 @RequestMapping("/part")
+@SecurityRequirement(name = "bearer-key")
 public class PartControllerPost {
 
     @Autowired

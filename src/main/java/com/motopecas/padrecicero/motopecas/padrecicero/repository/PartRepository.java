@@ -21,7 +21,7 @@ public interface PartRepository extends JpaRepository<Part, Long>, JpaSpecificat
     @Modifying
     @Query(value = """
     UPDATE part_code_sequence
-    SET value = LAST_INSERT_ID(value + 10)
+    SET `value` = LAST_INSERT_ID(`value` + 10)
     WHERE id = 1
     """, nativeQuery = true)
     void incrementPartCode();
